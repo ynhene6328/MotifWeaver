@@ -1,44 +1,45 @@
-# Topology設計
+# Topology設計（強化版）
 
 ## 1. 概要
 
-トポロジーはグラフ構造として定義される。
+本モジュールはグラフ構造を定義する。
 
-- Vertex
-- Edge
-- Face
+- Vertex（点）
+- Edge（辺）
+- Face（面）
 
 ---
 
-## 2. VertexKey
+## 2. 設計原則
+
+- 完全な一意性（Vertex / Edge）
+- 双方向参照を保持
+- 幾何情報を持たない
+
+---
+
+## 3. Vertex
 
 ```csharp
-public readonly struct VertexKey
+class Vertex
 {
-    public int X { get; }
-    public int Y { get; }
+    VertexKey Key;
+    List<Edge> Edges;
 }
 ```
 
 ---
 
-## 3. EdgeKey
+## 4. Edge
 
 ```csharp
-public readonly struct EdgeKey
+class Edge
 {
-    public VertexKey A { get; }
-    public VertexKey B { get; }
+    Vertex V1;
+    Vertex V2;
+
+    List<Face> Faces; // 隣接Face（最大2）
 }
-```
-
----
-
-## 4. 重複排除
-
-```csharp
-Dictionary<VertexKey, Vertex> vertices;
-Dictionary<EdgeKey, Edge> edges;
 ```
 
 ---
@@ -46,20 +47,47 @@ Dictionary<EdgeKey, Edge> edges;
 ## 5. Face
 
 ```csharp
-public class Face
+class Face
 {
-    public IReadOnlyList<Vertex> Vertices { get; }
-    public IReadOnlyList<Edge> Edges { get; }
-    public Color Color { get; set; }
+    List<Vertex> Vertices; // 時計回り（必須）
+    List<Edge> Edges;
+
+    Color Color;
 }
 ```
 
 ---
 
-## 6. 設計原則
+## 6. 一意性保証
 
-- Vertexは一意
-- Edgeは順序無視で一意
-- FaceはEdge集合
+```csharp
+Dictionary<VertexKey, Vertex> vertexMap;
+Dictionary<EdgeKey, Edge> edgeMap;
+```
+
+---
+
+## 7. 隣接関係API
+
+```csharp
+IEnumerable<Face> GetNeighbors(Face face)
+{
+    foreach (var edge in face.Edges)
+        foreach (var f in edge.Faces)
+            if (f != face)
+                yield return f;
+}
+```
+
+---
+
+## 8. 構造図
+
+```mermaid
+graph TD
+    Face --> Edge
+    Edge --> Vertex
+    Edge --> Face
+```
 
 ---
