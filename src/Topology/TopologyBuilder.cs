@@ -35,12 +35,15 @@ public sealed class TopologyBuilder
             throw new ArgumentException("A face requires at least three vertices.", nameof(vertexKeys));
         }
 
-        List<Vertex> vertices = new List<Vertex>(vertexKeys.Count);
-        List<Edge> edges = new List<Edge>(vertexKeys.Count);
+        List<VertexKey> normalizedVertexKeys = NormalizeClockwise(vertexKeys);
+        ValidateFace(normalizedVertexKeys);
 
-        for (int index = 0; index < vertexKeys.Count; index++)
+        List<Vertex> vertices = new List<Vertex>(normalizedVertexKeys.Count);
+        List<Edge> edges = new List<Edge>(normalizedVertexKeys.Count);
+
+        for (int index = 0; index < normalizedVertexKeys.Count; index++)
         {
-            Vertex vertex = GetOrCreateVertex(vertexKeys[index]);
+            Vertex vertex = GetOrCreateVertex(normalizedVertexKeys[index]);
             vertices.Add(vertex);
         }
 
@@ -63,7 +66,7 @@ public sealed class TopologyBuilder
         return face;
     }
 
-    public Vertex GetOrCreateVertex(VertexKey key)
+    private Vertex GetOrCreateVertex(VertexKey key)
     {
         if (_vertexMap.TryGetValue(key, out Vertex? existingVertex))
         {
@@ -75,7 +78,7 @@ public sealed class TopologyBuilder
         return vertex;
     }
 
-    public Edge GetOrCreateEdge(Vertex first, Vertex second)
+    private Edge GetOrCreateEdge(Vertex first, Vertex second)
     {
         if (first is null)
         {
@@ -100,5 +103,70 @@ public sealed class TopologyBuilder
         second.AttachEdge(edge);
 
         return edge;
+    }
+
+    private void ValidateFace(IReadOnlyList<VertexKey> vertexKeys)
+    {
+        HashSet<VertexKey> uniqueVertices = new HashSet<VertexKey>();
+        HashSet<EdgeKey> uniqueEdges = new HashSet<EdgeKey>();
+
+        for (int index = 0; index < vertexKeys.Count; index++)
+        {
+            VertexKey current = vertexKeys[index];
+            VertexKey next = vertexKeys[(index + 1) % vertexKeys.Count];
+
+            if (!uniqueVertices.Add(current))
+            {
+                throw new ArgumentException("A face cannot contain duplicated vertices.", nameof(vertexKeys));
+            }
+
+            EdgeKey edgeKey = new EdgeKey(current, next);
+            if (!uniqueEdges.Add(edgeKey))
+            {
+                throw new ArgumentException("A face cannot contain duplicated edges.", nameof(vertexKeys));
+            }
+
+            if (_edgeMap.TryGetValue(edgeKey, out Edge? existingEdge) && existingEdge.Faces.Count >= 2)
+            {
+                throw new InvalidOperationException("An edge cannot reference more than two faces.");
+            }
+        }
+    }
+
+    private static List<VertexKey> NormalizeClockwise(IReadOnlyList<VertexKey> vertexKeys)
+    {
+        List<VertexKey> normalized = new List<VertexKey>(vertexKeys.Count);
+
+        for (int index = 0; index < vertexKeys.Count; index++)
+        {
+            normalized.Add(vertexKeys[index]);
+        }
+
+        long signedArea = ComputeSignedArea(normalized);
+        if (signedArea == 0)
+        {
+            throw new ArgumentException("A face requires a non-degenerate polygon.", nameof(vertexKeys));
+        }
+
+        if (signedArea > 0)
+        {
+            normalized.Reverse();
+        }
+
+        return normalized;
+    }
+
+    private static long ComputeSignedArea(IReadOnlyList<VertexKey> vertexKeys)
+    {
+        long twiceArea = 0;
+
+        for (int index = 0; index < vertexKeys.Count; index++)
+        {
+            VertexKey current = vertexKeys[index];
+            VertexKey next = vertexKeys[(index + 1) % vertexKeys.Count];
+            twiceArea += ((long)current.X * next.Y) - ((long)next.X * current.Y);
+        }
+
+        return twiceArea;
     }
 }
