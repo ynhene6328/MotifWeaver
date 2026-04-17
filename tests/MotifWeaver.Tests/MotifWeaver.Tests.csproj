@@ -7,6 +7,7 @@
     <RootNamespace>MotifWeaver.Tests</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\\..\\src\\MotifWeaver.Core\\MotifWeaver.Core.csproj" />
+    <ProjectReference Include="..\..\src\MotifWeaver.Core\MotifWeaver.Core.csproj" />
+    <ProjectReference Include="..\..\src\MotifWeaver.Rendering\MotifWeaver.Rendering.csproj" />
   </ItemGroup>
 </Project>

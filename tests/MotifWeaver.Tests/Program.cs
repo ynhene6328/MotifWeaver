@@ -1,9 +1,11 @@
 // /tests/MotifWeaver.Tests/Program.cs
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 using MotifWeaver.Core.Geometry;
 using MotifWeaver.Core.Topology;
+using MotifWeaver.Rendering;
 
 namespace MotifWeaver.Tests;
 
@@ -26,6 +28,13 @@ public static class Program
             ComputeBoundsReturnsCorrectRange();
             BoundingBoxWidthAndHeightAreCorrect();
             CachedResultsAreStable();
+
+            RenderServiceCallsDrawPolygonOnceForSingleFace();
+            RenderServicePassesCorrectVertexCount();
+            RenderServiceUsesGeometryTransformedCoordinates();
+            RenderServicePreservesVertexOrder();
+            RenderServiceCallsDrawPolygonForEachFace();
+            RenderServiceHandlesEmptyCollection();
 
             Console.WriteLine("All tests passed.");
             return 0;
@@ -383,4 +392,202 @@ public static class Program
         AssertNearlyEqual(second.X, third.X, "複数回のキャッシュヒットでもX座標が安定しなければならない。");
         AssertNearlyEqual(second.Y, third.Y, "複数回のキャッシュヒットでもY座標が安定しなければならない。");
     }
+
+    // --- RenderServiceテスト ---
+
+    private static void RenderServiceCallsDrawPolygonOnceForSingleFace()
+    {
+        TopologyBuilder builder = new TopologyBuilder();
+        Face face = builder.CreateFace(
+        [
+            new VertexKey(0, 0),
+            new VertexKey(2, 0),
+            new VertexKey(1, 1)
+        ]);
+
+        HexGridGeometry geometry = new HexGridGeometry(1.0f);
+        MockRenderer renderer = new MockRenderer();
+        RenderService service = new RenderService(renderer, geometry);
+
+        service.Render([face]);
+
+        AssertEqual(1, renderer.DrawnPolygons.Count, "Face1つに対しDrawPolygonが1回呼ばれなければならない。");
+    }
+
+    private static void RenderServicePassesCorrectVertexCount()
+    {
+        TopologyBuilder builder = new TopologyBuilder();
+        Face triangle = builder.CreateFace(
+        [
+            new VertexKey(0, 0),
+            new VertexKey(2, 0),
+            new VertexKey(1, 1)
+        ]);
+
+        HexGridGeometry geometry = new HexGridGeometry(1.0f);
+        MockRenderer renderer = new MockRenderer();
+        RenderService service = new RenderService(renderer, geometry);
+
+        service.Render([triangle]);
+
+        AssertEqual(
+            triangle.Vertices.Count,
+            renderer.DrawnPolygons[0].Points.Count,
+            "渡されるVector2の数はFaceの頂点数と一致しなければならない。");
+    }
+
+    private static void RenderServiceUsesGeometryTransformedCoordinates()
+    {
+        TopologyBuilder builder = new TopologyBuilder();
+        Face face = builder.CreateFace(
+        [
+            new VertexKey(1, 0),
+            new VertexKey(0, 1),
+            new VertexKey(-1, 1)
+        ]);
+
+        HexGridGeometry geometry = new HexGridGeometry(1.0f);
+        MockRenderer renderer = new MockRenderer();
+        RenderService service = new RenderService(renderer, geometry);
+
+        service.Render([face]);
+
+        IReadOnlyList<Vector2> points = renderer.DrawnPolygons[0].Points;
+
+        // Geometry変換後の座標と一致することを確認
+        for (int index = 0; index < face.Vertices.Count; index++)
+        {
+            Vector2 expected = geometry.GetPosition(face.Vertices[index].Key);
+            AssertNearlyEqual(expected.X, points[index].X,
+                "Geometry経由のX座標が使われていなければならない。");
+            AssertNearlyEqual(expected.Y, points[index].Y,
+                "Geometry経由のY座標が使われていなければならない。");
+        }
+
+        // 整数座標そのままではないことを確認（少なくとも1つの頂点で差がある）
+        bool anyDifference = false;
+        for (int index = 0; index < face.Vertices.Count; index++)
+        {
+            VertexKey key = face.Vertices[index].Key;
+            Vector2 point = points[index];
+            if (MathF.Abs(point.X - key.X) > 0.0001f || MathF.Abs(point.Y - key.Y) > 0.0001f)
+            {
+                anyDifference = true;
+                break;
+            }
+        }
+
+        AssertTrue(anyDifference, "座標はGeometryで変換されたものでなければならない（整数座標そのままは不可）。");
+    }
+
+    private static void RenderServicePreservesVertexOrder()
+    {
+        TopologyBuilder builder = new TopologyBuilder();
+        Face face = builder.CreateFace(
+        [
+            new VertexKey(0, 0),
+            new VertexKey(2, 0),
+            new VertexKey(1, 1)
+        ]);
+
+        HexGridGeometry geometry = new HexGridGeometry(1.0f);
+        MockRenderer renderer = new MockRenderer();
+        RenderService service = new RenderService(renderer, geometry);
+
+        service.Render([face]);
+
+        IReadOnlyList<Vector2> points = renderer.DrawnPolygons[0].Points;
+
+        // Faceの頂点順序と同じ順序でVector2が渡されることを確認
+        for (int index = 0; index < face.Vertices.Count; index++)
+        {
+            Vector2 expected = geometry.GetPosition(face.Vertices[index].Key);
+            AssertNearlyEqual(expected.X, points[index].X,
+                $"頂点{index}のX座標の順序が維持されていなければならない。");
+            AssertNearlyEqual(expected.Y, points[index].Y,
+                $"頂点{index}のY座標の順序が維持されていなければならない。");
+        }
+    }
+
+    private static void RenderServiceCallsDrawPolygonForEachFace()
+    {
+        HexGridTopology hexGrid = new HexGridTopology();
+        IReadOnlyList<Face> faces = hexGrid.Build(2, 2);
+
+        HexGridGeometry geometry = new HexGridGeometry(1.0f);
+        MockRenderer renderer = new MockRenderer();
+        RenderService service = new RenderService(renderer, geometry);
+
+        service.Render(faces);
+
+        AssertEqual(faces.Count, renderer.DrawnPolygons.Count,
+            "Face数と同じ回数だけDrawPolygonが呼ばれなければならない。");
+    }
+
+    private static void RenderServiceHandlesEmptyCollection()
+    {
+        HexGridGeometry geometry = new HexGridGeometry(1.0f);
+        MockRenderer renderer = new MockRenderer();
+        RenderService service = new RenderService(renderer, geometry);
+
+        // 例外が出ないことを確認
+        service.Render(new List<Face>());
+
+        AssertEqual(0, renderer.DrawnPolygons.Count,
+            "空コレクションではDrawPolygonが呼ばれてはならない。");
+        AssertTrue(renderer.BeginCalled, "空コレクションでもBeginは呼ばれなければならない。");
+        AssertTrue(renderer.EndCalled, "空コレクションでもEndは呼ばれなければならない。");
+    }
+}
+
+/// <summary>
+/// テスト用のIRenderer実装。DrawPolygonの呼び出し内容を記録する。
+/// </summary>
+internal sealed class MockRenderer : IRenderer
+{
+    private readonly List<DrawnPolygon> _drawnPolygons;
+
+    public MockRenderer()
+    {
+        _drawnPolygons = new List<DrawnPolygon>();
+    }
+
+    public bool BeginCalled { get; private set; }
+
+    public bool EndCalled { get; private set; }
+
+    public IReadOnlyList<DrawnPolygon> DrawnPolygons => _drawnPolygons;
+
+    public void Begin()
+    {
+        BeginCalled = true;
+    }
+
+    public void DrawPolygon(IReadOnlyList<Vector2> points, Color fillColor)
+    {
+        _drawnPolygons.Add(new DrawnPolygon(
+            new List<Vector2>(points),
+            fillColor));
+    }
+
+    public void End()
+    {
+        EndCalled = true;
+    }
+}
+
+/// <summary>
+/// DrawPolygonに渡された内容を保持するレコード
+/// </summary>
+internal sealed class DrawnPolygon
+{
+    public DrawnPolygon(IReadOnlyList<Vector2> points, Color fillColor)
+    {
+        Points = points;
+        FillColor = fillColor;
+    }
+
+    public IReadOnlyList<Vector2> Points { get; }
+
+    public Color FillColor { get; }
 }
