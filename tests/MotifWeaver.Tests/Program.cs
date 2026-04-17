@@ -17,6 +17,7 @@ public static class Program
             FaceVerticesAreClockwise();
             AdjacentFacesShareEdge();
             NeighborsAreDerivedFromSharedEdges();
+            HexGridSharesEdgesAndReusesVertices();
 
             Console.WriteLine("All topology tests passed.");
             return 0;
@@ -182,6 +183,38 @@ public static class Program
         AssertEqual(0, isolatedNeighbors.Count, "A face without shared edges must have no neighbors.");
         AssertTrue(ReferenceEquals(secondFace, firstNeighbors[0]), "Neighbor lookup must return the face sharing the edge.");
         AssertTrue(ReferenceEquals(firstFace, secondNeighbors[0]), "Neighbor lookup must return the shared adjacent face.");
+    }
+
+    private static void HexGridSharesEdgesAndReusesVertices()
+    {
+        HexGridTopology hexGridTopology = new HexGridTopology();
+        IReadOnlyList<Face> faces = hexGridTopology.Build(2, 2);
+        TopologyBuilder topologyBuilder = hexGridTopology.Builder;
+
+        AssertEqual(4, faces.Count, "A 2x2 hex grid must create four faces.");
+        AssertEqual(20, topologyBuilder.Vertices.Count, "Hex grid vertices must be reused instead of duplicated.");
+
+        int sharedEdgeCount = 0;
+
+        foreach (Edge edge in topologyBuilder.Edges.Values)
+        {
+            AssertTrue(edge.Faces.Count <= 2, "Every edge must reference at most two faces.");
+
+            if (edge.Faces.Count == 2)
+            {
+                sharedEdgeCount++;
+            }
+        }
+
+        AssertEqual(1, sharedEdgeCount, "The 2x2 hex grid must contain one shared interior edge.");
+
+        List<Face> neighborsOfUpperRight = new List<Face>(topologyBuilder.GetNeighbors(faces[1]));
+        List<Face> neighborsOfLowerLeft = new List<Face>(topologyBuilder.GetNeighbors(faces[2]));
+
+        AssertEqual(1, neighborsOfUpperRight.Count, "The upper-right hex must have one adjacent hex in a 2x2 grid.");
+        AssertEqual(1, neighborsOfLowerLeft.Count, "The lower-left hex must have one adjacent hex in a 2x2 grid.");
+        AssertTrue(ReferenceEquals(faces[2], neighborsOfUpperRight[0]), "Shared edges must connect the expected adjacent hex.");
+        AssertTrue(ReferenceEquals(faces[1], neighborsOfLowerLeft[0]), "Shared edges must be visible from both adjacent hexes.");
     }
 
     private static long ComputeSignedArea(IReadOnlyList<Vertex> vertices)
