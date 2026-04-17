@@ -1,8 +1,8 @@
-// /src/Topology/Vertex.cs
+// /src/MotifWeaver.Core/Topology/Vertex.cs
 using System;
 using System.Collections.Generic;
 
-namespace MotifWeaver.Topology;
+namespace MotifWeaver.Core.Topology;
 
 public sealed class Vertex
 {

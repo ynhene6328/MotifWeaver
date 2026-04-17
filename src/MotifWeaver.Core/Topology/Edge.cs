@@ -1,8 +1,8 @@
-// /src/Topology/Edge.cs
+// /src/MotifWeaver.Core/Topology/Edge.cs
 using System;
 using System.Collections.Generic;
 
-namespace MotifWeaver.Topology;
+namespace MotifWeaver.Core.Topology;
 
 public sealed class Edge
 {

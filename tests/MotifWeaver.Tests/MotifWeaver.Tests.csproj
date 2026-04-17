@@ -4,6 +4,9 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <RootNamespace>MotifWeaver</RootNamespace>
+    <RootNamespace>MotifWeaver.Tests</RootNamespace>
   </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\\..\\src\\MotifWeaver.Core\\MotifWeaver.Core.csproj" />
+  </ItemGroup>
 </Project>

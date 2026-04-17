@@ -1,7 +1,7 @@
-// /src/Topology/VertexKey.cs
+// /src/MotifWeaver.Core/Topology/VertexKey.cs
 using System;
 
-namespace MotifWeaver.Topology;
+namespace MotifWeaver.Core.Topology;
 
 public readonly struct VertexKey : IEquatable<VertexKey>
 {

@@ -1,8 +1,8 @@
-// /src/Topology/TopologyBuilder.cs
+// /src/MotifWeaver.Core/Topology/TopologyBuilder.cs
 using System;
 using System.Collections.Generic;
 
-namespace MotifWeaver.Topology;
+namespace MotifWeaver.Core.Topology;
 
 public sealed class TopologyBuilder
 {

@@ -1,9 +1,9 @@
-// /src/Topology/Face.cs
+// /src/MotifWeaver.Core/Topology/Face.cs
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 
-namespace MotifWeaver.Topology;
+namespace MotifWeaver.Core.Topology;
 
 public sealed class Face
 {

@@ -6,7 +6,7 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            "program": "${workspaceFolder}/bin/Debug/net8.0/MotifWeaver.dll",
+            "program": "${workspaceFolder}/src/MotifWeaver.App/bin/Debug/net8.0/MotifWeaver.App.dll",
             "args": [],
             "cwd": "${workspaceFolder}",
             "stopAtEntry": false,

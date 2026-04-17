@@ -1,7 +1,7 @@
-// /src/Topology/EdgeKey.cs
+// /src/MotifWeaver.Core/Topology/EdgeKey.cs
 using System;
 
-namespace MotifWeaver.Topology;
+namespace MotifWeaver.Core.Topology;
 
 public readonly struct EdgeKey : IEquatable<EdgeKey>
 {
