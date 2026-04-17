@@ -5,4 +5,8 @@
     <Nullable>enable</Nullable>
     <RootNamespace>MotifWeaver.Rendering</RootNamespace>
   </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\MotifWeaver.Core\MotifWeaver.Core.csproj" />
+  </ItemGroup>
 </Project>
+
