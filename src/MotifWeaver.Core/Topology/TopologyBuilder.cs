@@ -23,6 +23,37 @@ public sealed class TopologyBuilder
 
     public IReadOnlyList<Face> Faces => _faces;
 
+    public IEnumerable<Face> GetNeighbors(Face face)
+    {
+        if (face is null)
+        {
+            throw new ArgumentNullException(nameof(face));
+        }
+
+        if (!_faces.Contains(face))
+        {
+            throw new ArgumentException("The specified face is not managed by this builder.", nameof(face));
+        }
+
+        HashSet<Face> neighbors = new HashSet<Face>();
+
+        for (int edgeIndex = 0; edgeIndex < face.Edges.Count; edgeIndex++)
+        {
+            Edge edge = face.Edges[edgeIndex];
+
+            for (int faceIndex = 0; faceIndex < edge.Faces.Count; faceIndex++)
+            {
+                Face adjacentFace = edge.Faces[faceIndex];
+                if (!ReferenceEquals(adjacentFace, face))
+                {
+                    neighbors.Add(adjacentFace);
+                }
+            }
+        }
+
+        return neighbors;
+    }
+
     public Face CreateFace(IReadOnlyList<VertexKey> vertexKeys)
     {
         if (vertexKeys is null)

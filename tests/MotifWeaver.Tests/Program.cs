@@ -16,6 +16,7 @@ public static class Program
             EdgeFacesAreLimitedToTwo();
             FaceVerticesAreClockwise();
             AdjacentFacesShareEdge();
+            NeighborsAreDerivedFromSharedEdges();
 
             Console.WriteLine("All topology tests passed.");
             return 0;
@@ -145,6 +146,42 @@ public static class Program
         AssertTrue(firstFace.Edges.Contains(sharedEdge), "The first face must reference the shared edge.");
         AssertTrue(secondFace.Edges.Contains(sharedEdge), "The second face must reference the shared edge.");
         AssertEqual(2, sharedEdge.Faces.Count, "The shared edge must reference exactly two faces.");
+    }
+
+    private static void NeighborsAreDerivedFromSharedEdges()
+    {
+        TopologyBuilder topologyBuilder = new TopologyBuilder();
+
+        Face firstFace = topologyBuilder.CreateFace(
+        [
+            new VertexKey(0, 0),
+            new VertexKey(2, 0),
+            new VertexKey(1, 1)
+        ]);
+
+        Face secondFace = topologyBuilder.CreateFace(
+        [
+            new VertexKey(2, 0),
+            new VertexKey(0, 0),
+            new VertexKey(1, -1)
+        ]);
+
+        Face isolatedFace = topologyBuilder.CreateFace(
+        [
+            new VertexKey(10, 10),
+            new VertexKey(12, 10),
+            new VertexKey(11, 11)
+        ]);
+
+        List<Face> firstNeighbors = new List<Face>(topologyBuilder.GetNeighbors(firstFace));
+        List<Face> secondNeighbors = new List<Face>(topologyBuilder.GetNeighbors(secondFace));
+        List<Face> isolatedNeighbors = new List<Face>(topologyBuilder.GetNeighbors(isolatedFace));
+
+        AssertEqual(1, firstNeighbors.Count, "A shared edge must produce one adjacent face.");
+        AssertEqual(1, secondNeighbors.Count, "Adjacent faces must be discovered symmetrically.");
+        AssertEqual(0, isolatedNeighbors.Count, "A face without shared edges must have no neighbors.");
+        AssertTrue(ReferenceEquals(secondFace, firstNeighbors[0]), "Neighbor lookup must return the face sharing the edge.");
+        AssertTrue(ReferenceEquals(firstFace, secondNeighbors[0]), "Neighbor lookup must return the shared adjacent face.");
     }
 
     private static long ComputeSignedArea(IReadOnlyList<Vertex> vertices)
