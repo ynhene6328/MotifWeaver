@@ -1,6 +1,8 @@
 // /tests/MotifWeaver.Tests/Program.cs
 using System;
 using System.Collections.Generic;
+using System.Numerics;
+using MotifWeaver.Core.Geometry;
 using MotifWeaver.Core.Topology;
 
 namespace MotifWeaver.Tests;
@@ -19,7 +21,13 @@ public static class Program
             NeighborsAreDerivedFromSharedEdges();
             HexGridSharesEdgesAndReusesVertices();
 
-            Console.WriteLine("All topology tests passed.");
+            HexGeometryReturnsSamePositionForSameKey();
+            HexGeometryReturnsDifferentPositionsForDifferentKeys();
+            ComputeBoundsReturnsCorrectRange();
+            BoundingBoxWidthAndHeightAreCorrect();
+            CachedResultsAreStable();
+
+            Console.WriteLine("All tests passed.");
             return 0;
         }
         catch (Exception exception)
@@ -261,5 +269,118 @@ public static class Program
         }
 
         throw new InvalidOperationException(message);
+    }
+
+    private static void AssertNearlyEqual(float expected, float actual, string message, float tolerance = 0.0001f)
+    {
+        if (MathF.Abs(expected - actual) > tolerance)
+        {
+            throw new InvalidOperationException($"{message} Expected: {expected}. Actual: {actual}.");
+        }
+    }
+
+    // --- Geometryテスト ---
+
+    private static void HexGeometryReturnsSamePositionForSameKey()
+    {
+        HexGridGeometry geometry = new HexGridGeometry(1.0f);
+        VertexKey key = new VertexKey(3, 2);
+
+        Vector2 first = geometry.GetPosition(key);
+        Vector2 second = geometry.GetPosition(key);
+
+        AssertNearlyEqual(first.X, second.X, "同一キーから得られるX座標は一致しなければならない。");
+        AssertNearlyEqual(first.Y, second.Y, "同一キーから得られるY座標は一致しなければならない。");
+    }
+
+    private static void HexGeometryReturnsDifferentPositionsForDifferentKeys()
+    {
+        HexGridGeometry geometry = new HexGridGeometry(1.0f);
+        VertexKey keyA = new VertexKey(0, 0);
+        VertexKey keyB = new VertexKey(1, 0);
+        VertexKey keyC = new VertexKey(0, 1);
+
+        Vector2 posA = geometry.GetPosition(keyA);
+        Vector2 posB = geometry.GetPosition(keyB);
+        Vector2 posC = geometry.GetPosition(keyC);
+
+        AssertTrue(
+            MathF.Abs(posA.X - posB.X) > 0.0001f || MathF.Abs(posA.Y - posB.Y) > 0.0001f,
+            "異なるVertexKeyは異なる座標を返さなければならない。(A vs B)");
+        AssertTrue(
+            MathF.Abs(posA.X - posC.X) > 0.0001f || MathF.Abs(posA.Y - posC.Y) > 0.0001f,
+            "異なるVertexKeyは異なる座標を返さなければならない。(A vs C)");
+    }
+
+    private static void ComputeBoundsReturnsCorrectRange()
+    {
+        HexGridGeometry geometry = new HexGridGeometry(1.0f);
+
+        // 六角形(q=0,r=0)の6頂点: (1,0),(0,1),(-1,1),(-1,0),(0,-1),(1,-1)
+        List<VertexKey> keys =
+        [
+            new VertexKey(1, 0),
+            new VertexKey(0, 1),
+            new VertexKey(-1, 1),
+            new VertexKey(-1, 0),
+            new VertexKey(0, -1),
+            new VertexKey(1, -1)
+        ];
+
+        BoundingBox bounds = geometry.ComputeBounds(keys);
+
+        // x = X * (w/2): 最小X=-1 → -0.5, 最大X=1 → 0.5
+        AssertNearlyEqual(-0.5f, bounds.MinX, "ComputeBoundsのMinXが正しくなければならない。");
+        AssertNearlyEqual(0.5f, bounds.MaxX, "ComputeBoundsのMaxXが正しくなければならない。");
+
+        // y = Y * (√3/2) * w: 最小Y=-1 → -√3/2, 最大Y=1 → √3/2
+        float halfSqrt3 = MathF.Sqrt(3.0f) / 2.0f;
+        AssertNearlyEqual(-halfSqrt3, bounds.MinY, "ComputeBoundsのMinYが正しくなければならない。");
+        AssertNearlyEqual(halfSqrt3, bounds.MaxY, "ComputeBoundsのMaxYが正しくなければならない。");
+    }
+
+    private static void BoundingBoxWidthAndHeightAreCorrect()
+    {
+        HexGridGeometry geometry = new HexGridGeometry(2.0f);
+
+        // unitSize=2.0の場合: x = X * 1.0, y = Y * √3
+        List<VertexKey> keys =
+        [
+            new VertexKey(1, 0),
+            new VertexKey(0, 1),
+            new VertexKey(-1, 1),
+            new VertexKey(-1, 0),
+            new VertexKey(0, -1),
+            new VertexKey(1, -1)
+        ];
+
+        BoundingBox bounds = geometry.ComputeBounds(keys);
+
+        // Width = MaxX - MinX = 1.0 - (-1.0) = 2.0
+        AssertNearlyEqual(2.0f, bounds.Width, "BoundingBoxのWidthが正しくなければならない。");
+
+        // Height = MaxY - MinY = √3 - (-√3) = 2√3
+        float expectedHeight = MathF.Sqrt(3.0f) * 2.0f;
+        AssertNearlyEqual(expectedHeight, bounds.Height, "BoundingBoxのHeightが正しくなければならない。");
+    }
+
+    private static void CachedResultsAreStable()
+    {
+        HexGridGeometry geometry = new HexGridGeometry(1.0f);
+        VertexKey key = new VertexKey(5, 3);
+
+        // 初回呼び出し（キャッシュ未登録）
+        Vector2 first = geometry.GetPosition(key);
+
+        // 2回目呼び出し（キャッシュヒット）
+        Vector2 second = geometry.GetPosition(key);
+
+        // 3回目呼び出し（キャッシュヒット）
+        Vector2 third = geometry.GetPosition(key);
+
+        AssertNearlyEqual(first.X, second.X, "キャッシュ後もX座標が安定しなければならない。");
+        AssertNearlyEqual(first.Y, second.Y, "キャッシュ後もY座標が安定しなければならない。");
+        AssertNearlyEqual(second.X, third.X, "複数回のキャッシュヒットでもX座標が安定しなければならない。");
+        AssertNearlyEqual(second.Y, third.Y, "複数回のキャッシュヒットでもY座標が安定しなければならない。");
     }
 }
