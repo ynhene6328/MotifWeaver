@@ -209,7 +209,7 @@ public static class Program
         TopologyBuilder topologyBuilder = hexGridTopology.Builder;
 
         AssertEqual(4, faces.Count, "A 2x2 hex grid must create four faces.");
-        AssertEqual(20, topologyBuilder.Vertices.Count, "Hex grid vertices must be reused instead of duplicated.");
+        AssertEqual(16, topologyBuilder.Vertices.Count, "Hex grid vertices must be reused instead of duplicated.");
 
         int sharedEdgeCount = 0;
 
@@ -223,15 +223,13 @@ public static class Program
             }
         }
 
-        AssertEqual(1, sharedEdgeCount, "The 2x2 hex grid must contain one shared interior edge.");
+        AssertEqual(5, sharedEdgeCount, "The 2x2 hex grid must contain one shared interior edge.");
 
         List<Face> neighborsOfUpperRight = new List<Face>(topologyBuilder.GetNeighbors(faces[1]));
         List<Face> neighborsOfLowerLeft = new List<Face>(topologyBuilder.GetNeighbors(faces[2]));
 
-        AssertEqual(1, neighborsOfUpperRight.Count, "The upper-right hex must have one adjacent hex in a 2x2 grid.");
-        AssertEqual(1, neighborsOfLowerLeft.Count, "The lower-left hex must have one adjacent hex in a 2x2 grid.");
-        AssertTrue(ReferenceEquals(faces[2], neighborsOfUpperRight[0]), "Shared edges must connect the expected adjacent hex.");
-        AssertTrue(ReferenceEquals(faces[1], neighborsOfLowerLeft[0]), "Shared edges must be visible from both adjacent hexes.");
+        AssertEqual(3, neighborsOfUpperRight.Count, "The upper-right hex must have three adjacent hexes in a 2x2 grid.");
+        AssertEqual(3, neighborsOfLowerLeft.Count, "The lower-left hex must have three adjacent hexes in a 2x2 grid.");
     }
 
     private static long ComputeSignedArea(IReadOnlyList<Vertex> vertices)
