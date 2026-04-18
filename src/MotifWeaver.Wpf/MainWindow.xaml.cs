@@ -17,9 +17,15 @@ public partial class MainWindow : Window
     private void Window_Loaded(object sender, RoutedEventArgs e)
     {
         HexGridTopology topology = new HexGridTopology();
-        IReadOnlyList<Face> faces = topology.Build(3, 3);
+        IReadOnlyList<Face> faces = topology.Build(3, 4);
         
         HexGridGeometry geometry = new HexGridGeometry(40.0f);
+
+        // TriangleGridTopology topology = new TriangleGridTopology();
+        // var faces = topology.Build(3, 4);
+
+        // TriangleGridGeometry geometry = new TriangleGridGeometry(40.0f);
+
         
         WpfRenderer renderer = new WpfRenderer(MainCanvas);
         RenderService renderService = new RenderService(renderer, geometry);
