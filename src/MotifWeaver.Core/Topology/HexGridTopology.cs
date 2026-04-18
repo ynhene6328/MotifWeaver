@@ -49,17 +49,19 @@ public sealed class HexGridTopology
 
     private static IReadOnlyList<VertexKey> CreateHexVertices(int q, int r)
     {
-        int cx = (2 * q) + r;
-        int cy = 2 * r;
+        int cx = 3 * q;
+        int cy = r * 2;
+
+        cy += (q % 2 == 0) ? 0 : 1;
 
         return
         [
             new VertexKey(cx + 1, cy),
-            new VertexKey(cx, cy + 1),
-            new VertexKey(cx - 1, cy + 1),
-            new VertexKey(cx - 1, cy),
-            new VertexKey(cx, cy - 1),
-            new VertexKey(cx + 1, cy - 1)
+            new VertexKey(cx + 3, cy),
+            new VertexKey(cx + 4, cy + 1),
+            new VertexKey(cx + 3, cy + 2),
+            new VertexKey(cx + 1, cy + 2),
+            new VertexKey(cx    , cy + 1)
         ];
     }
 }
