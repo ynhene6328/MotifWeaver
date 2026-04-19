@@ -14,11 +14,13 @@ public sealed class RenderService
 {
     private readonly IRenderer _renderer;
     private readonly IGridGeometry _geometry;
+    private readonly ColorPalette _palette;
 
-    public RenderService(IRenderer renderer, IGridGeometry geometry)
+    public RenderService(IRenderer renderer, IGridGeometry geometry, ColorPalette palette)
     {
         _renderer = renderer ?? throw new ArgumentNullException(nameof(renderer));
         _geometry = geometry ?? throw new ArgumentNullException(nameof(geometry));
+        _palette = palette ?? throw new ArgumentNullException(nameof(palette));
     }
 
     /// <summary>
@@ -43,8 +45,7 @@ public sealed class RenderService
                 points.Add(position);
             }
 
-            // System.Drawing.Color → Rendering.Color への変換
-            Color fillColor = new Color(face.Color.R, face.Color.G, face.Color.B);
+            Color fillColor = _palette.GetColor(face.AttributeId);
             _renderer.DrawPolygon(points, fillColor);
         }
 

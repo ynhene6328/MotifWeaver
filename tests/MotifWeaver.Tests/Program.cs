@@ -405,7 +405,7 @@ public static class Program
 
         HexGridGeometry geometry = new HexGridGeometry(1.0f);
         MockRenderer renderer = new MockRenderer();
-        RenderService service = new RenderService(renderer, geometry);
+        RenderService service = new RenderService(renderer, geometry, new ColorPalette());
 
         service.Render([face]);
 
@@ -424,7 +424,7 @@ public static class Program
 
         HexGridGeometry geometry = new HexGridGeometry(1.0f);
         MockRenderer renderer = new MockRenderer();
-        RenderService service = new RenderService(renderer, geometry);
+        RenderService service = new RenderService(renderer, geometry, new ColorPalette());
 
         service.Render([triangle]);
 
@@ -446,7 +446,7 @@ public static class Program
 
         HexGridGeometry geometry = new HexGridGeometry(1.0f);
         MockRenderer renderer = new MockRenderer();
-        RenderService service = new RenderService(renderer, geometry);
+        RenderService service = new RenderService(renderer, geometry, new ColorPalette());
 
         service.Render([face]);
 
@@ -490,7 +490,7 @@ public static class Program
 
         HexGridGeometry geometry = new HexGridGeometry(1.0f);
         MockRenderer renderer = new MockRenderer();
-        RenderService service = new RenderService(renderer, geometry);
+        RenderService service = new RenderService(renderer, geometry, new ColorPalette());
 
         service.Render([face]);
 
@@ -514,7 +514,7 @@ public static class Program
 
         HexGridGeometry geometry = new HexGridGeometry(1.0f);
         MockRenderer renderer = new MockRenderer();
-        RenderService service = new RenderService(renderer, geometry);
+        RenderService service = new RenderService(renderer, geometry, new ColorPalette());
 
         service.Render(faces);
 
@@ -526,7 +526,7 @@ public static class Program
     {
         HexGridGeometry geometry = new HexGridGeometry(1.0f);
         MockRenderer renderer = new MockRenderer();
-        RenderService service = new RenderService(renderer, geometry);
+        RenderService service = new RenderService(renderer, geometry, new ColorPalette());
 
         // 例外が出ないことを確認
         service.Render(new List<Face>());

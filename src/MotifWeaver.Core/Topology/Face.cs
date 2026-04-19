@@ -1,7 +1,6 @@
 // /src/MotifWeaver.Core/Topology/Face.cs
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 
 namespace MotifWeaver.Core.Topology;
 
@@ -45,8 +44,6 @@ public sealed class Face : IAttributable
     public IReadOnlyList<Vertex> Vertices => _vertices;
 
     public IReadOnlyList<Edge> Edges => _edges;
-
-    public Color Color { get; set; } = Color.White;
 
     public int AttributeId { get; set; }
 }

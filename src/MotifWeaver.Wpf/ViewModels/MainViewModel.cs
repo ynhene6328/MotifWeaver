@@ -13,7 +13,16 @@ public sealed class MainViewModel
 
         var geometry = new HexGridGeometry(40.0f);
 
-        var renderService = new RenderService(renderer, geometry);
+        var palette = new ColorPalette();
+        palette.SetColor(1, new Color(255, 0, 0));
+
+        // 確認のため最初のFaceにAttributeId=1を設定
+        if (faces.Count > 0)
+        {
+            faces[0].AttributeId = 1;
+        }
+
+        var renderService = new RenderService(renderer, geometry, palette);
         renderService.Render(faces);
     }
 }
