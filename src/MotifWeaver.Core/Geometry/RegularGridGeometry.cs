@@ -72,4 +72,11 @@ public sealed class RegularGridGeometry : IGridGeometry
 
         return new BoundingBox(minX, minY, maxX, maxY);
     }
+
+    public Vector2 ToLogicalPosition(Vector2 screenPosition)
+    {
+        float logicalX = screenPosition.X / ((MathF.Sqrt(3.0f) / 2.0f) * _unitSize);
+        float logicalY = screenPosition.Y / ((1.0f / 2.0f) * _unitSize);
+        return new Vector2(logicalX, logicalY);
+    }
 }

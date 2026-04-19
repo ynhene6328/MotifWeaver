@@ -20,4 +20,5 @@ public sealed class TriangleGridGeometry : IGridGeometry
 
     public Vector2 GetPosition(VertexKey key) => _inner.GetPosition(key);
     public BoundingBox ComputeBounds(IEnumerable<VertexKey> keys) => _inner.ComputeBounds(keys);
+    public Vector2 ToLogicalPosition(Vector2 screenPosition) => _inner.ToLogicalPosition(screenPosition);
 }

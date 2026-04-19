@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace MotifWeaver.Core.Topology;
 
-public sealed class Edge
+public sealed class Edge : IAttributable
 {
     private readonly List<Face> _faces;
 
@@ -58,4 +58,6 @@ public sealed class Edge
 
         _faces.Add(face);
     }
+
+    public int AttributeId { get; set; }
 }

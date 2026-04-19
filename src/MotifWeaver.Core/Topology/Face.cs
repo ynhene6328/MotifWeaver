@@ -5,7 +5,7 @@ using System.Drawing;
 
 namespace MotifWeaver.Core.Topology;
 
-public sealed class Face
+public sealed class Face : IAttributable
 {
     private readonly List<Vertex> _vertices;
     private readonly List<Edge> _edges;
@@ -47,4 +47,6 @@ public sealed class Face
     public IReadOnlyList<Edge> Edges => _edges;
 
     public Color Color { get; set; } = Color.White;
+
+    public int AttributeId { get; set; }
 }

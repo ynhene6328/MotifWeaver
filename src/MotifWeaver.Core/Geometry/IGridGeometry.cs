@@ -19,4 +19,9 @@ public interface IGridGeometry
     /// 指定された頂点群のバウンディングボックスを算出する
     /// </summary>
     BoundingBox ComputeBounds(IEnumerable<VertexKey> vertexKeys);
+
+    /// <summary>
+    /// 描画座標を論理座標に変換する
+    /// </summary>
+    Vector2 ToLogicalPosition(Vector2 screenPosition);
 }
