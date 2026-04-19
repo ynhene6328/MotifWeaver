@@ -15,7 +15,7 @@ public sealed class MainViewModel
 
     public MainViewModel()
     {
-        Pattern = new Pattern(new HexGridTopology(), 5, 4);
+        Pattern = new Pattern(new HexGridTopology(), 4, 4);
 
         _geometry = new HexGridGeometry(40.0f);
         _query = new RayCastingTopologyQuery();
@@ -31,7 +31,7 @@ public sealed class MainViewModel
         
         if (face != null)
         {
-            face.AttributeId = 1;
+            face.AttributeId = face.AttributeId == 0 ? 1 : 0;
         }
     }
 
