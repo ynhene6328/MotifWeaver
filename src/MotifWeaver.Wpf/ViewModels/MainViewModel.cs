@@ -1,3 +1,4 @@
+using System.Numerics;
 using MotifWeaver.Core.Geometry;
 using MotifWeaver.Core.Topology;
 using MotifWeaver.Rendering;
@@ -6,23 +7,39 @@ namespace MotifWeaver.Wpf.ViewModels;
 
 public sealed class MainViewModel
 {
-    public void Render(IRenderer renderer)
+    private readonly IGridGeometry _geometry;
+    private readonly ITopologyQuery _query;
+    private readonly ColorPalette _palette;
+
+    public Pattern Pattern { get; }
+
+    public MainViewModel()
     {
         var topology = new HexGridTopology();
         var faces = topology.Build(5, 5);
+        Pattern = new Pattern(faces, 5, 5);
 
-        var geometry = new HexGridGeometry(40.0f);
+        _geometry = new HexGridGeometry(40.0f);
+        _query = new RayCastingTopologyQuery();
+        _palette = new ColorPalette();
 
-        var palette = new ColorPalette();
-        palette.SetColor(1, new Color(255, 0, 0));
+        _palette.SetColor(1, new Color(255, 0, 0));
+    }
 
-        // 確認のため最初のFaceにAttributeId=1を設定
-        if (faces.Count > 0)
+    public void OnClick(Vector2 screenPosition)
+    {
+        Vector2 logicalPosition = _geometry.ToLogicalPosition(screenPosition);
+        Face? face = _query.FindFace(Pattern.Faces, logicalPosition, _geometry);
+        
+        if (face != null)
         {
-            faces[0].AttributeId = 1;
+            face.AttributeId = 1;
         }
+    }
 
-        var renderService = new RenderService(renderer, geometry, palette);
-        renderService.Render(faces);
+    public void Render(IRenderer renderer)
+    {
+        var renderService = new RenderService(renderer, _geometry, _palette);
+        renderService.Render(Pattern.Faces);
     }
 }

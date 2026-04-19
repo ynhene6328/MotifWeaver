@@ -4,6 +4,6 @@
         Title="MotifWeaver" Height="450" Width="800"
         Loaded="Window_Loaded">
     <Grid>
-        <Canvas x:Name="MainCanvas" HorizontalAlignment="Center" VerticalAlignment="Center" />
+        <Canvas x:Name="MainCanvas" HorizontalAlignment="Center" VerticalAlignment="Center" Background="Transparent" MouseLeftButtonDown="MainCanvas_MouseLeftButtonDown" />
     </Grid>
 </Window>
