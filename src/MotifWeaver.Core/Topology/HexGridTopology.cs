@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace MotifWeaver.Core.Topology;
 
-public sealed class HexGridTopology
+public sealed class HexGridTopology : IGridTopology
 {
     private readonly TopologyBuilder _topologyBuilder;
 
@@ -63,5 +63,10 @@ public sealed class HexGridTopology
             new VertexKey(cx + 1, cy + 2),
             new VertexKey(cx    , cy + 1)
         ];
+    }
+
+    public (int rows, int cols) CalculateSize(IReadOnlyList<Face> faces)
+    {
+        return (0, 0); // 暫定実装
     }
 }

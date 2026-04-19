@@ -15,9 +15,7 @@ public sealed class MainViewModel
 
     public MainViewModel()
     {
-        var topology = new HexGridTopology();
-        var faces = topology.Build(5, 5);
-        Pattern = new Pattern(faces, 5, 5);
+        Pattern = new Pattern(new HexGridTopology(), 5, 4);
 
         _geometry = new HexGridGeometry(40.0f);
         _query = new RayCastingTopologyQuery();

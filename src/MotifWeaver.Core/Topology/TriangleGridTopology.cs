@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace MotifWeaver.Core.Topology;
 
-public sealed class TriangleGridTopology
+public sealed class TriangleGridTopology : IGridTopology
 {
     private readonly TopologyBuilder _topologyBuilder;
 
@@ -58,5 +58,10 @@ public sealed class TriangleGridTopology
         }
 
         return faces;
+    }
+
+    public (int rows, int cols) CalculateSize(IReadOnlyList<Face> faces)
+    {
+        return (0, 0); // 暫定実装
     }
 }

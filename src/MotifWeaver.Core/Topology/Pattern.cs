@@ -5,29 +5,25 @@ namespace MotifWeaver.Core.Topology;
 
 public sealed class Pattern
 {
-    public IReadOnlyList<Face> Faces { get; }
-    public int Rows { get; }
-    public int Cols { get; }
+    public IGridTopology Topology { get; }
 
-    public Pattern(IReadOnlyList<Face> faces, int rows, int cols)
+    public IReadOnlyList<Face> Faces { get; private set; }
+
+    public int Rows { get; private set; }
+    public int Cols { get; private set; }
+
+    public Pattern(IGridTopology topology, int rows, int cols)
     {
-        if (faces is null)
-        {
-            throw new ArgumentNullException(nameof(faces));
-        }
+        if (topology is null)
+            throw new ArgumentNullException(nameof(topology));
+        
+        if (cols % 2 != 0)
+            throw new ArgumentException("列数は偶数である必要があります");
 
-        if (rows < 0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(rows));
-        }
-
-        if (cols < 0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(cols));
-        }
-
-        Faces = faces;
+        Topology = topology;
         Rows = rows;
         Cols = cols;
+
+        Faces = topology.Build(rows, cols);
     }
 }
