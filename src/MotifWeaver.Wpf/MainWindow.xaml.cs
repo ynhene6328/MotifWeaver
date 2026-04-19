@@ -1,35 +1,23 @@
-using System.Collections.Generic;
 using System.Windows;
-using MotifWeaver.Core.Geometry;
-using MotifWeaver.Core.Topology;
-using MotifWeaver.Rendering;
 using MotifWeaver.Wpf.Renderer;
+using MotifWeaver.Wpf.ViewModels;
 
 namespace MotifWeaver.Wpf;
 
 public partial class MainWindow : Window
 {
+    private readonly MainViewModel _viewModel;
+
     public MainWindow()
     {
         InitializeComponent();
+        _viewModel = new MainViewModel();
+        DataContext = _viewModel;
     }
 
     private void Window_Loaded(object sender, RoutedEventArgs e)
     {
-        HexGridTopology topology = new HexGridTopology();
-        IReadOnlyList<Face> faces = topology.Build(3, 4);
-        
-        HexGridGeometry geometry = new HexGridGeometry(40.0f);
-
-        // TriangleGridTopology topology = new TriangleGridTopology();
-        // var faces = topology.Build(3, 4);
-
-        // TriangleGridGeometry geometry = new TriangleGridGeometry(40.0f);
-
-        
-        WpfRenderer renderer = new WpfRenderer(MainCanvas);
-        RenderService renderService = new RenderService(renderer, geometry);
-        
-        renderService.Render(faces);
+        var renderer = new WpfRenderer(MainCanvas);
+        _viewModel.Render(renderer);
     }
 }
