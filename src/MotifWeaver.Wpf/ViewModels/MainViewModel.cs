@@ -38,6 +38,6 @@ public sealed class MainViewModel
     public void Render(IRenderer renderer)
     {
         var renderService = new RenderService(renderer, _geometry, _palette);
-        renderService.Render(Pattern.Faces);
+        renderService.Render(Pattern);
     }
 }

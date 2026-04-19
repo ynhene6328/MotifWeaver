@@ -407,7 +407,7 @@ public static class Program
         MockRenderer renderer = new MockRenderer();
         RenderService service = new RenderService(renderer, geometry, new ColorPalette());
 
-        service.Render([face]);
+        service.Render(new Pattern(new MockGridTopology([face]), 0, 0));
 
         AssertEqual(1, renderer.DrawnPolygons.Count, "Face1つに対しDrawPolygonが1回呼ばれなければならない。");
     }
@@ -426,7 +426,7 @@ public static class Program
         MockRenderer renderer = new MockRenderer();
         RenderService service = new RenderService(renderer, geometry, new ColorPalette());
 
-        service.Render([triangle]);
+        service.Render(new Pattern(new MockGridTopology([triangle]), 0, 0));
 
         AssertEqual(
             triangle.Vertices.Count,
@@ -448,7 +448,7 @@ public static class Program
         MockRenderer renderer = new MockRenderer();
         RenderService service = new RenderService(renderer, geometry, new ColorPalette());
 
-        service.Render([face]);
+        service.Render(new Pattern(new MockGridTopology([face]), 0, 0));
 
         IReadOnlyList<Vector2> points = renderer.DrawnPolygons[0].Points;
 
@@ -492,7 +492,7 @@ public static class Program
         MockRenderer renderer = new MockRenderer();
         RenderService service = new RenderService(renderer, geometry, new ColorPalette());
 
-        service.Render([face]);
+        service.Render(new Pattern(new MockGridTopology([face]), 0, 0));
 
         IReadOnlyList<Vector2> points = renderer.DrawnPolygons[0].Points;
 
@@ -510,15 +510,15 @@ public static class Program
     private static void RenderServiceCallsDrawPolygonForEachFace()
     {
         HexGridTopology hexGrid = new HexGridTopology();
-        IReadOnlyList<Face> faces = hexGrid.Build(2, 2);
+        Pattern pattern = new Pattern(hexGrid, 2, 2);
 
         HexGridGeometry geometry = new HexGridGeometry(1.0f);
         MockRenderer renderer = new MockRenderer();
         RenderService service = new RenderService(renderer, geometry, new ColorPalette());
 
-        service.Render(faces);
+        service.Render(pattern);
 
-        AssertEqual(faces.Count, renderer.DrawnPolygons.Count,
+        AssertEqual(pattern.Faces.Count, renderer.DrawnPolygons.Count,
             "Face数と同じ回数だけDrawPolygonが呼ばれなければならない。");
     }
 
@@ -529,12 +529,35 @@ public static class Program
         RenderService service = new RenderService(renderer, geometry, new ColorPalette());
 
         // 例外が出ないことを確認
-        service.Render(new List<Face>());
+        service.Render(new Pattern(new MockGridTopology(new List<Face>()), 0, 0));
 
         AssertEqual(0, renderer.DrawnPolygons.Count,
             "空コレクションではDrawPolygonが呼ばれてはならない。");
         AssertTrue(renderer.BeginCalled, "空コレクションでもBeginは呼ばれなければならない。");
         AssertTrue(renderer.EndCalled, "空コレクションでもEndは呼ばれなければならない。");
+    }
+}
+
+/// <summary>
+/// テスト用のIGridTopology実装。直接Faceリストを返す。
+/// </summary>
+internal sealed class MockGridTopology : IGridTopology
+{
+    private readonly IReadOnlyList<Face> _faces;
+
+    public MockGridTopology(IReadOnlyList<Face> faces)
+    {
+        _faces = faces;
+    }
+
+    public IReadOnlyList<Face> Build(int rows, int cols)
+    {
+        return _faces;
+    }
+
+    public (int rows, int cols) CalculateSize(IReadOnlyList<Face> faces)
+    {
+        return (0, 0);
     }
 }
 

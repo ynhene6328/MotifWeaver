@@ -24,18 +24,18 @@ public sealed class RenderService
     }
 
     /// <summary>
-    /// 指定されたFace群を描画する
+    /// 指定されたPatternを描画する
     /// </summary>
-    public void Render(IEnumerable<Face> faces)
+    public void Render(Pattern pattern)
     {
-        if (faces is null)
+        if (pattern is null)
         {
-            throw new ArgumentNullException(nameof(faces));
+            throw new ArgumentNullException(nameof(pattern));
         }
 
         _renderer.Begin();
 
-        foreach (Face face in faces)
+        foreach (Face face in pattern.Faces)
         {
             List<Vector2> points = new List<Vector2>(face.Vertices.Count);
 
