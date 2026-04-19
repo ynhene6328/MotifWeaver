@@ -10,26 +10,26 @@ public sealed class RayCastingTopologyQuery : ITopologyQuery
 {
     public Face? FindFace(
         IReadOnlyList<Face> faces,
-        Vector2 logicalPosition,
-        IGridGeometry geometry)
+        Vector2 logicalPosition)
     {
         if (faces is null)
         {
             throw new ArgumentNullException(nameof(faces));
         }
 
-        if (geometry is null)
-        {
-            throw new ArgumentNullException(nameof(geometry));
-        }
-
         for (int faceIndex = 0; faceIndex < faces.Count; faceIndex++)
         {
             Face face = faces[faceIndex];
 
-            // BoundingBoxで事前フィルタ
+            // 論理座標のBoundingBoxで事前フィルタ
             IEnumerable<VertexKey> keys = face.Vertices.Select(v => v.Key);
-            BoundingBox bounds = geometry.ComputeBounds(keys);
+            var bounds = new
+            {
+                MinX = keys.Select(k => k.X).Min(),
+                MaxX = keys.Select(k => k.X).Max(),
+                MinY = keys.Select(k => k.Y).Min(),
+                MaxY = keys.Select(k => k.Y).Max()
+            };
 
             if (logicalPosition.X < bounds.MinX || logicalPosition.X > bounds.MaxX ||
                 logicalPosition.Y < bounds.MinY || logicalPosition.Y > bounds.MaxY)
@@ -38,12 +38,7 @@ public sealed class RayCastingTopologyQuery : ITopologyQuery
             }
 
             // Ray Castingによる判定
-            IReadOnlyList<Vertex> vertices = face.Vertices;
-            List<Vector2> polygon = new List<Vector2>(vertices.Count);
-            for (int i = 0; i < vertices.Count; i++)
-            {
-                polygon.Add(geometry.GetPosition(vertices[i].Key));
-            }
+            var polygon = face.Vertices.Select(v => new Vector2(v.Key.X, v.Key.Y)).ToArray();
 
             if (IsPointInPolygon(logicalPosition, polygon))
             {

@@ -29,7 +29,7 @@ public sealed class MainViewModel
     public void OnClick(Vector2 screenPosition)
     {
         Vector2 logicalPosition = _geometry.ToLogicalPosition(screenPosition);
-        Face? face = _query.FindFace(Pattern.Faces, logicalPosition, _geometry);
+        Face? face = _query.FindFace(Pattern.Faces, logicalPosition);
         
         if (face != null)
         {

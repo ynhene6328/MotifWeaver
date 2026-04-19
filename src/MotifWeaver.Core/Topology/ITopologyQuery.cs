@@ -8,6 +8,5 @@ public interface ITopologyQuery
 {
     Face? FindFace(
         IReadOnlyList<Face> faces,
-        Vector2 logicalPosition,
-        IGridGeometry geometry);
+        Vector2 logicalPosition);
 }
