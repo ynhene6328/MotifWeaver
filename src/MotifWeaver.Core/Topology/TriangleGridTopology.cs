@@ -62,6 +62,16 @@ public sealed class TriangleGridTopology : IGridTopology
 
     public (int rows, int cols) CalculateSize(IReadOnlyList<Face> faces)
     {
-        return (0, 0); // 暫定実装
+        var topVertices = new List<VertexKey>();
+        foreach(var face in faces)
+        {
+            topVertices.AddRange(face.Vertices.Where(v => v.Key.Y == 0).Select(v => v.Key));
+        }
+        var maxX = topVertices.Select(v => v.X).Max();
+        var minX = topVertices.Select(v => v.X).Min();
+        
+        var maxY = faces.Select(f => f.Vertices.Select(v => v.Key.Y).Max()).Max();
+
+        return (maxY, maxX - minX + 1);
     }
 }
