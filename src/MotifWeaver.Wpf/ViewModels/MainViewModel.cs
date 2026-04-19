@@ -35,9 +35,16 @@ public sealed class MainViewModel
         }
     }
 
-    public void Render(IRenderer renderer)
+    public void Render(IRenderer editorRenderer, IRenderer viewerRenderer, float viewerWidth, float viewerHeight)
     {
-        var renderService = new RenderService(renderer, _geometry, _palette);
-        renderService.Render(Pattern);
+        var editorService = new RenderService(editorRenderer, _geometry, _palette);
+        editorService.Render(Pattern);
+
+        var viewerService = new RenderService(viewerRenderer, _geometry, _palette);
+        var repeatService = new ViewerRenderService(viewerService);
+        
+        viewerRenderer.Begin(); // 描画前にクリア
+        repeatService.Render(Pattern, viewerWidth, viewerHeight);
+        viewerRenderer.End();
     }
 }

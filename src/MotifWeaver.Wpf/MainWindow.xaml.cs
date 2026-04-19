@@ -9,7 +9,8 @@ namespace MotifWeaver.Wpf;
 public partial class MainWindow : Window
 {
     private readonly MainViewModel _viewModel;
-    private WpfRenderer? _renderer;
+    private WpfRenderer? _editorRenderer;
+    private WpfRenderer? _viewerRenderer;
 
     public MainWindow()
     {
@@ -20,17 +21,18 @@ public partial class MainWindow : Window
 
     private void Window_Loaded(object sender, RoutedEventArgs e)
     {
-        _renderer = new WpfRenderer(MainCanvas);
-        _viewModel.Render(_renderer);
+        _editorRenderer = new WpfRenderer(EditorCanvas);
+        _viewerRenderer = new WpfRenderer(ViewerCanvas);
+        _viewModel.Render(_editorRenderer, _viewerRenderer, (float)ViewerCanvas.ActualWidth, (float)ViewerCanvas.ActualHeight);
     }
 
-    private void MainCanvas_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+    private void MainCanvas_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
     {
-        if (_renderer == null)
+        if (_editorRenderer == null || _viewerRenderer == null)
             return;
 
-        Point position = e.GetPosition(MainCanvas);
+        Point position = e.GetPosition(EditorCanvas);
         _viewModel.OnClick(new Vector2((float)position.X, (float)position.Y));
-        _viewModel.Render(_renderer);
+        _viewModel.Render(_editorRenderer, _viewerRenderer, (float)ViewerCanvas.ActualWidth, (float)ViewerCanvas.ActualHeight);
     }
 }

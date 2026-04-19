@@ -77,6 +77,6 @@ public sealed class HexGridTopology : IGridTopology
         
         var maxY = faces.Select(f => f.Vertices.Select(v => v.Key.Y).Max()).Max();
 
-        return (maxY, maxX - minX + 1);
+        return (maxY - 1, maxX - minX);
     }
 }

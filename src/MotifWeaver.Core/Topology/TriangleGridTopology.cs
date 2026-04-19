@@ -72,6 +72,6 @@ public sealed class TriangleGridTopology : IGridTopology
         
         var maxY = faces.Select(f => f.Vertices.Select(v => v.Key.Y).Max()).Max();
 
-        return (maxY, maxX - minX + 1);
+        return (maxY, maxX - minX);
     }
 }

@@ -28,12 +28,17 @@ public sealed class RenderService
     /// </summary>
     public void Render(Pattern pattern)
     {
+        _renderer.Begin();
+        Render(pattern, Vector2.Zero);
+        _renderer.End();
+    }
+
+    public void Render(Pattern pattern, Vector2 logicalOffset)
+    {
         if (pattern is null)
         {
             throw new ArgumentNullException(nameof(pattern));
         }
-
-        _renderer.Begin();
 
         foreach (Face face in pattern.Faces)
         {
@@ -41,14 +46,17 @@ public sealed class RenderService
 
             for (int index = 0; index < face.Vertices.Count; index++)
             {
-                Vector2 position = _geometry.GetPosition(face.Vertices[index].Key);
+                VertexKey key = face.Vertices[index].Key;
+                var shifted = new VertexKey(
+                    key.X + (int)logicalOffset.X,
+                    key.Y + (int)logicalOffset.Y);
+
+                Vector2 position = _geometry.GetPosition(shifted);
                 points.Add(position);
             }
 
             Color fillColor = _palette.GetColor(face.AttributeId);
             _renderer.DrawPolygon(points, fillColor);
         }
-
-        _renderer.End();
     }
 }
