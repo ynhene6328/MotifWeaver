@@ -555,7 +555,7 @@ internal sealed class MockGridTopology : IGridTopology
         return _faces;
     }
 
-    public (int rows, int cols) CalculateSize(IReadOnlyList<Face> faces)
+    public (int width, int height) CalculateSize(IReadOnlyList<Face> faces)
     {
         return (0, 0);
     }

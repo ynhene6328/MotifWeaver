@@ -21,13 +21,11 @@ public sealed class ViewerRenderer
         if (pattern == null)
             throw new ArgumentNullException(nameof(pattern));
 
-        var (dy, dx) = pattern.Topology.CalculateSize(pattern.Faces);
-
-        if (dx == 0) dx = 6;
-        if (dy == 0) dy = 6;
-
-        int repeatX = 10;
-        int repeatY = 10;
+        var (dx, dy) = pattern.Topology.CalculateSize(pattern.Faces);
+        
+        var logicalSize = _renderService.Geometry.ToLogicalPosition(new Vector2(width, height));
+        var repeatX = (int)(logicalSize.X / dx) + 1;
+        var repeatY = (int)(logicalSize.Y / dy) + 1;
 
         _renderer.Begin();
 

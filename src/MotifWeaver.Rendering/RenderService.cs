@@ -14,6 +14,7 @@ public sealed class RenderService
 {
     private readonly IRenderer _renderer;
     private readonly IGridGeometry _geometry;
+    public IGridGeometry Geometry => _geometry;
     private readonly ColorPalette _palette;
 
     public RenderService(IRenderer renderer, IGridGeometry geometry, ColorPalette palette)

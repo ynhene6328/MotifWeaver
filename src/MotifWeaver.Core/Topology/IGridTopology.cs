@@ -6,5 +6,5 @@ public interface IGridTopology
 {
     IReadOnlyList<Face> Build(int rows, int cols);
 
-    (int rows, int cols) CalculateSize(IReadOnlyList<Face> faces);
+    (int width, int height) CalculateSize(IReadOnlyList<Face> faces);
 }

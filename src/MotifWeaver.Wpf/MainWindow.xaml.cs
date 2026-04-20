@@ -28,11 +28,13 @@ public partial class MainWindow : Window
 
     private void MainCanvas_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
     {
-        if (_editorRenderer == null || _viewerRenderer == null)
-            return;
-
         Point position = e.GetPosition(EditorCanvas);
         _viewModel.OnClick(new Vector2((float)position.X, (float)position.Y));
+        _viewModel.Render((float)ViewerCanvas.ActualWidth, (float)ViewerCanvas.ActualHeight);
+    }
+
+    private void ViewerCanvas_SizeChanged(object sender, SizeChangedEventArgs e)
+    {
         _viewModel.Render((float)ViewerCanvas.ActualWidth, (float)ViewerCanvas.ActualHeight);
     }
 }

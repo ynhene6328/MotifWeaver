@@ -65,7 +65,7 @@ public sealed class HexGridTopology : IGridTopology
         ];
     }
 
-    public (int rows, int cols) CalculateSize(IReadOnlyList<Face> faces)
+    public (int width, int height) CalculateSize(IReadOnlyList<Face> faces)
     {
         var targetVertices = new List<VertexKey>();
         foreach(var face in faces)
@@ -77,6 +77,6 @@ public sealed class HexGridTopology : IGridTopology
         
         var maxY = faces.Select(f => f.Vertices.Select(v => v.Key.Y).Max()).Max();
 
-        return (maxY - 1, maxX - minX);
+        return (maxX - minX, maxY - 1);
     }
 }
