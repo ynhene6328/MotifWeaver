@@ -405,9 +405,9 @@ public static class Program
 
         HexGridGeometry geometry = new HexGridGeometry(1.0f);
         MockRenderer renderer = new MockRenderer();
-        RenderService service = new RenderService(renderer, geometry, new ColorPalette());
+        MotifWeaver.Rendering.UseCases.EditorRenderer service = new MotifWeaver.Rendering.UseCases.EditorRenderer(renderer, geometry, new ColorPalette());
 
-        service.Render(new Pattern(new MockGridTopology([face]), 0, 0));
+        service.Render(new Pattern(new MockGridTopology([face]), 4, 4));
 
         AssertEqual(1, renderer.DrawnPolygons.Count, "Face1つに対しDrawPolygonが1回呼ばれなければならない。");
     }
@@ -424,9 +424,9 @@ public static class Program
 
         HexGridGeometry geometry = new HexGridGeometry(1.0f);
         MockRenderer renderer = new MockRenderer();
-        RenderService service = new RenderService(renderer, geometry, new ColorPalette());
+        MotifWeaver.Rendering.UseCases.EditorRenderer service = new MotifWeaver.Rendering.UseCases.EditorRenderer(renderer, geometry, new ColorPalette());
 
-        service.Render(new Pattern(new MockGridTopology([triangle]), 0, 0));
+        service.Render(new Pattern(new MockGridTopology([triangle]), 4, 4));
 
         AssertEqual(
             triangle.Vertices.Count,
@@ -446,9 +446,9 @@ public static class Program
 
         HexGridGeometry geometry = new HexGridGeometry(1.0f);
         MockRenderer renderer = new MockRenderer();
-        RenderService service = new RenderService(renderer, geometry, new ColorPalette());
+        MotifWeaver.Rendering.UseCases.EditorRenderer service = new MotifWeaver.Rendering.UseCases.EditorRenderer(renderer, geometry, new ColorPalette());
 
-        service.Render(new Pattern(new MockGridTopology([face]), 0, 0));
+        service.Render(new Pattern(new MockGridTopology([face]), 4, 4));
 
         IReadOnlyList<Vector2> points = renderer.DrawnPolygons[0].Points;
 
@@ -490,9 +490,9 @@ public static class Program
 
         HexGridGeometry geometry = new HexGridGeometry(1.0f);
         MockRenderer renderer = new MockRenderer();
-        RenderService service = new RenderService(renderer, geometry, new ColorPalette());
+        MotifWeaver.Rendering.UseCases.EditorRenderer service = new MotifWeaver.Rendering.UseCases.EditorRenderer(renderer, geometry, new ColorPalette());
 
-        service.Render(new Pattern(new MockGridTopology([face]), 0, 0));
+        service.Render(new Pattern(new MockGridTopology([face]), 4, 4));
 
         IReadOnlyList<Vector2> points = renderer.DrawnPolygons[0].Points;
 
@@ -514,7 +514,7 @@ public static class Program
 
         HexGridGeometry geometry = new HexGridGeometry(1.0f);
         MockRenderer renderer = new MockRenderer();
-        RenderService service = new RenderService(renderer, geometry, new ColorPalette());
+        MotifWeaver.Rendering.UseCases.EditorRenderer service = new MotifWeaver.Rendering.UseCases.EditorRenderer(renderer, geometry, new ColorPalette());
 
         service.Render(pattern);
 
@@ -526,10 +526,10 @@ public static class Program
     {
         HexGridGeometry geometry = new HexGridGeometry(1.0f);
         MockRenderer renderer = new MockRenderer();
-        RenderService service = new RenderService(renderer, geometry, new ColorPalette());
+        MotifWeaver.Rendering.UseCases.EditorRenderer service = new MotifWeaver.Rendering.UseCases.EditorRenderer(renderer, geometry, new ColorPalette());
 
         // 例外が出ないことを確認
-        service.Render(new Pattern(new MockGridTopology(new List<Face>()), 0, 0));
+        service.Render(new Pattern(new MockGridTopology(new List<Face>()), 4, 4));
 
         AssertEqual(0, renderer.DrawnPolygons.Count,
             "空コレクションではDrawPolygonが呼ばれてはならない。");

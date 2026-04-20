@@ -23,15 +23,7 @@ public sealed class RenderService
         _palette = palette ?? throw new ArgumentNullException(nameof(palette));
     }
 
-    /// <summary>
-    /// 指定されたPatternを描画する
-    /// </summary>
-    public void Render(Pattern pattern)
-    {
-        _renderer.Begin();
-        Render(pattern, Vector2.Zero);
-        _renderer.End();
-    }
+
 
     public void Render(Pattern pattern, Vector2 logicalOffset)
     {

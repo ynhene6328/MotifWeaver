@@ -1,16 +1,19 @@
 using System;
 using System.Numerics;
+using MotifWeaver.Core.Geometry;
 using MotifWeaver.Core.Topology;
 
-namespace MotifWeaver.Rendering;
+namespace MotifWeaver.Rendering.UseCases;
 
-public sealed class ViewerRenderService
+public sealed class ViewerRenderer
 {
+    private readonly IRenderer _renderer;
     private readonly RenderService _renderService;
 
-    public ViewerRenderService(RenderService renderService)
+    public ViewerRenderer(IRenderer renderer, IGridGeometry geometry, ColorPalette palette)
     {
-        _renderService = renderService ?? throw new ArgumentNullException(nameof(renderService));
+        _renderer = renderer ?? throw new ArgumentNullException(nameof(renderer));
+        _renderService = new RenderService(renderer, geometry, palette);
     }
 
     public void Render(Pattern pattern, float width, float height)
@@ -18,15 +21,15 @@ public sealed class ViewerRenderService
         if (pattern == null)
             throw new ArgumentNullException(nameof(pattern));
 
-        // Topologyから論理サイズを取得
         var (dy, dx) = pattern.Topology.CalculateSize(pattern.Faces);
 
-        if (dx == 0) dx = 6; // HexGridの場合の暫定論理幅 (例: cxが幅なので6にする)
-        if (dy == 0) dy = 6; // HexGridの場合の暫定論理高さ
+        if (dx == 0) dx = 6;
+        if (dy == 0) dy = 6;
 
-        // 暫定：固定回数でも可（後で改善）
         int repeatX = 10;
         int repeatY = 10;
+
+        _renderer.Begin();
 
         for (int y = 0; y < repeatY; y++)
         {
@@ -36,5 +39,7 @@ public sealed class ViewerRenderService
                 _renderService.Render(pattern, offset);
             }
         }
+
+        _renderer.End();
     }
 }

@@ -15,15 +15,15 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
-        _viewModel = new MainViewModel();
+        _editorRenderer = new WpfRenderer(EditorCanvas);
+        _viewerRenderer = new WpfRenderer(ViewerCanvas);
+        _viewModel = new MainViewModel(_editorRenderer, _viewerRenderer);
         DataContext = _viewModel;
     }
 
     private void Window_Loaded(object sender, RoutedEventArgs e)
     {
-        _editorRenderer = new WpfRenderer(EditorCanvas);
-        _viewerRenderer = new WpfRenderer(ViewerCanvas);
-        _viewModel.Render(_editorRenderer, _viewerRenderer, (float)ViewerCanvas.ActualWidth, (float)ViewerCanvas.ActualHeight);
+        _viewModel.Render((float)ViewerCanvas.ActualWidth, (float)ViewerCanvas.ActualHeight);
     }
 
     private void MainCanvas_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
@@ -33,6 +33,6 @@ public partial class MainWindow : Window
 
         Point position = e.GetPosition(EditorCanvas);
         _viewModel.OnClick(new Vector2((float)position.X, (float)position.Y));
-        _viewModel.Render(_editorRenderer, _viewerRenderer, (float)ViewerCanvas.ActualWidth, (float)ViewerCanvas.ActualHeight);
+        _viewModel.Render((float)ViewerCanvas.ActualWidth, (float)ViewerCanvas.ActualHeight);
     }
 }

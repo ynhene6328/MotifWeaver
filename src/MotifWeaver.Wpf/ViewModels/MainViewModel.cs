@@ -2,6 +2,7 @@ using System.Numerics;
 using MotifWeaver.Core.Geometry;
 using MotifWeaver.Core.Topology;
 using MotifWeaver.Rendering;
+using MotifWeaver.Rendering.UseCases;
 
 namespace MotifWeaver.Wpf.ViewModels;
 
@@ -11,9 +12,12 @@ public sealed class MainViewModel
     private readonly ITopologyQuery _query;
     private readonly ColorPalette _palette;
 
+    private readonly EditorRenderer _editorRenderer;
+    private readonly ViewerRenderer _viewerRenderer;
+
     public Pattern Pattern { get; }
 
-    public MainViewModel()
+    public MainViewModel(IRenderer editorRenderer, IRenderer viewerRenderer)
     {
         Pattern = new Pattern(new HexGridTopology(), 4, 4);
 
@@ -22,6 +26,9 @@ public sealed class MainViewModel
         _palette = new ColorPalette();
 
         _palette.SetColor(1, new Color(255, 0, 0));
+
+        _editorRenderer = new EditorRenderer(editorRenderer, _geometry, _palette);
+        _viewerRenderer = new ViewerRenderer(viewerRenderer, _geometry, _palette);
     }
 
     public void OnClick(Vector2 screenPosition)
@@ -35,16 +42,9 @@ public sealed class MainViewModel
         }
     }
 
-    public void Render(IRenderer editorRenderer, IRenderer viewerRenderer, float viewerWidth, float viewerHeight)
+    public void Render(float viewerWidth, float viewerHeight)
     {
-        var editorService = new RenderService(editorRenderer, _geometry, _palette);
-        editorService.Render(Pattern);
-
-        var viewerService = new RenderService(viewerRenderer, _geometry, _palette);
-        var repeatService = new ViewerRenderService(viewerService);
-        
-        viewerRenderer.Begin(); // 描画前にクリア
-        repeatService.Render(Pattern, viewerWidth, viewerHeight);
-        viewerRenderer.End();
+        _editorRenderer.Render(Pattern);
+        _viewerRenderer.Render(Pattern, viewerWidth, viewerHeight);
     }
 }
