@@ -23,6 +23,6 @@ public sealed class ColorPalette
             return color;
         }
 
-        return new Color(0, 0, 0); // デフォルト黒
+        return new Color(255, 255, 255); // デフォルト白
     }
 }
