@@ -12,7 +12,7 @@ namespace MotifWeaver.Wpf.ViewModels;
 
 public sealed class MainViewModel
 {
-    private readonly IGridGeometry _geometry;
+    private IGridGeometry _geometry;
     private readonly ITopologyQuery _query;
     private EditorRenderer _editorRenderer = null!;
     private ViewerRenderer _viewerRenderer = null!;
@@ -88,9 +88,21 @@ public sealed class MainViewModel
 
     public void CreatePattern(PatternCreationParameters p)
     {
-        IGridTopology topology = p.GridType == GridType.Triangle 
-            ? new TriangleGridTopology() 
-            : new HexGridTopology();
+        IGridTopology topology;
+
+        switch (p.GridType)
+        {
+            case GridType.Triangle:
+                topology = new TriangleGridTopology();
+                _geometry = new TriangleGridGeometry(80.0f);
+                break;
+            case GridType.Hex:
+                topology = new HexGridTopology();
+                _geometry = new HexGridGeometry(40.0f);
+                break;
+            default:
+                throw new ArgumentException("Unsupported grid type");
+        }
 
         Pattern = new Pattern(topology, p.Rows, p.Cols);
 
