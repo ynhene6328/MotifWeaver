@@ -10,10 +10,10 @@ public sealed class ViewerRenderer
     private readonly IRenderer _renderer;
     private readonly RenderService _renderService;
 
-    public ViewerRenderer(IRenderer renderer, IGridGeometry geometry, ColorPalette palette)
+    public ViewerRenderer(IRenderer renderer, IGridGeometry geometry, Func<int, Color> colorResolver)
     {
         _renderer = renderer ?? throw new ArgumentNullException(nameof(renderer));
-        _renderService = new RenderService(renderer, geometry, palette);
+        _renderService = new RenderService(renderer, geometry, colorResolver);
     }
 
     public void Render(Pattern pattern, float width, float height)

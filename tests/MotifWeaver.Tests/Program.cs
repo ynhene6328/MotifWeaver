@@ -405,7 +405,7 @@ public static class Program
 
         HexGridGeometry geometry = new HexGridGeometry(1.0f);
         MockRenderer renderer = new MockRenderer();
-        MotifWeaver.Rendering.UseCases.EditorRenderer service = new MotifWeaver.Rendering.UseCases.EditorRenderer(renderer, geometry, new ColorPalette());
+        MotifWeaver.Rendering.UseCases.EditorRenderer service = new MotifWeaver.Rendering.UseCases.EditorRenderer(renderer, geometry, new Func<int, MotifWeaver.Rendering.Color>(id => new MotifWeaver.Rendering.Color(200, 0, 0)));
 
         service.Render(new Pattern(new MockGridTopology([face]), 4, 4));
 
@@ -424,7 +424,7 @@ public static class Program
 
         HexGridGeometry geometry = new HexGridGeometry(1.0f);
         MockRenderer renderer = new MockRenderer();
-        MotifWeaver.Rendering.UseCases.EditorRenderer service = new MotifWeaver.Rendering.UseCases.EditorRenderer(renderer, geometry, new ColorPalette());
+        MotifWeaver.Rendering.UseCases.EditorRenderer service = new MotifWeaver.Rendering.UseCases.EditorRenderer(renderer, geometry, new Func<int, MotifWeaver.Rendering.Color>(id => new MotifWeaver.Rendering.Color(200, 0, 0)));
 
         service.Render(new Pattern(new MockGridTopology([triangle]), 4, 4));
 
@@ -446,7 +446,7 @@ public static class Program
 
         HexGridGeometry geometry = new HexGridGeometry(1.0f);
         MockRenderer renderer = new MockRenderer();
-        MotifWeaver.Rendering.UseCases.EditorRenderer service = new MotifWeaver.Rendering.UseCases.EditorRenderer(renderer, geometry, new ColorPalette());
+        MotifWeaver.Rendering.UseCases.EditorRenderer service = new MotifWeaver.Rendering.UseCases.EditorRenderer(renderer, geometry, new Func<int, MotifWeaver.Rendering.Color>(id => new MotifWeaver.Rendering.Color(200, 0, 0)));
 
         service.Render(new Pattern(new MockGridTopology([face]), 4, 4));
 
@@ -490,7 +490,7 @@ public static class Program
 
         HexGridGeometry geometry = new HexGridGeometry(1.0f);
         MockRenderer renderer = new MockRenderer();
-        MotifWeaver.Rendering.UseCases.EditorRenderer service = new MotifWeaver.Rendering.UseCases.EditorRenderer(renderer, geometry, new ColorPalette());
+        MotifWeaver.Rendering.UseCases.EditorRenderer service = new MotifWeaver.Rendering.UseCases.EditorRenderer(renderer, geometry, new Func<int, MotifWeaver.Rendering.Color>(id => new MotifWeaver.Rendering.Color(200, 0, 0)));
 
         service.Render(new Pattern(new MockGridTopology([face]), 4, 4));
 
@@ -514,7 +514,7 @@ public static class Program
 
         HexGridGeometry geometry = new HexGridGeometry(1.0f);
         MockRenderer renderer = new MockRenderer();
-        MotifWeaver.Rendering.UseCases.EditorRenderer service = new MotifWeaver.Rendering.UseCases.EditorRenderer(renderer, geometry, new ColorPalette());
+        MotifWeaver.Rendering.UseCases.EditorRenderer service = new MotifWeaver.Rendering.UseCases.EditorRenderer(renderer, geometry, new Func<int, MotifWeaver.Rendering.Color>(id => new MotifWeaver.Rendering.Color(200, 0, 0)));
 
         service.Render(pattern);
 
@@ -526,7 +526,7 @@ public static class Program
     {
         HexGridGeometry geometry = new HexGridGeometry(1.0f);
         MockRenderer renderer = new MockRenderer();
-        MotifWeaver.Rendering.UseCases.EditorRenderer service = new MotifWeaver.Rendering.UseCases.EditorRenderer(renderer, geometry, new ColorPalette());
+        MotifWeaver.Rendering.UseCases.EditorRenderer service = new MotifWeaver.Rendering.UseCases.EditorRenderer(renderer, geometry, new Func<int, MotifWeaver.Rendering.Color>(id => new MotifWeaver.Rendering.Color(200, 0, 0)));
 
         // 例外が出ないことを確認
         service.Render(new Pattern(new MockGridTopology(new List<Face>()), 4, 4));

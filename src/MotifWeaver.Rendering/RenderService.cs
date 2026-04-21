@@ -15,13 +15,13 @@ public sealed class RenderService
     private readonly IRenderer _renderer;
     private readonly IGridGeometry _geometry;
     public IGridGeometry Geometry => _geometry;
-    private readonly ColorPalette _palette;
+    private readonly Func<int, Color> _colorResolver;
 
-    public RenderService(IRenderer renderer, IGridGeometry geometry, ColorPalette palette)
+    public RenderService(IRenderer renderer, IGridGeometry geometry, Func<int, Color> colorResolver)
     {
         _renderer = renderer ?? throw new ArgumentNullException(nameof(renderer));
         _geometry = geometry ?? throw new ArgumentNullException(nameof(geometry));
-        _palette = palette ?? throw new ArgumentNullException(nameof(palette));
+        _colorResolver = colorResolver ?? throw new ArgumentNullException(nameof(colorResolver));
     }
 
 
@@ -48,7 +48,7 @@ public sealed class RenderService
                 points.Add(position);
             }
 
-            Color fillColor = _palette.GetColor(face.AttributeId);
+            Color fillColor = _colorResolver(face.AttributeId);
             _renderer.DrawPolygon(points, fillColor);
         }
     }

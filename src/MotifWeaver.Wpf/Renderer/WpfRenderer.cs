@@ -28,13 +28,13 @@ public sealed class WpfRenderer : IRenderer
         Polygon polygon = new Polygon
         {
             Fill = new SolidColorBrush(System.Windows.Media.Color.FromRgb(fillColor.R, fillColor.G, fillColor.B)),
-            Stroke = Brushes.Black,
+            Stroke = System.Windows.Media.Brushes.Black,
             StrokeThickness = 1
         };
 
         for (int i = 0; i < points.Count; i++)
         {
-            polygon.Points.Add(new Point(points[i].X, points[i].Y));
+            polygon.Points.Add(new System.Windows.Point(points[i].X, points[i].Y));
         }
 
         _canvas.Children.Add(polygon);

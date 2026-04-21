@@ -28,7 +28,7 @@ public partial class MainWindow : Window
 
     private void MainCanvas_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
     {
-        Point position = e.GetPosition(EditorCanvas);
+        System.Windows.Point position = e.GetPosition(EditorCanvas);
         _viewModel.OnClick(new Vector2((float)position.X, (float)position.Y));
         _viewModel.Render((float)ViewerCanvas.ActualWidth, (float)ViewerCanvas.ActualHeight);
     }
