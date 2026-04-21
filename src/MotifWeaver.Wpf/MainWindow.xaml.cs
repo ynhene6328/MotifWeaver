@@ -26,6 +26,16 @@ public partial class MainWindow : Window
         _viewModel.Render((float)ViewerCanvas.ActualWidth, (float)ViewerCanvas.ActualHeight);
     }
 
+    private void InitButton_Click(object sender, RoutedEventArgs e)
+    {
+        var dialog = new Views.NewPatternDialog();
+        if (dialog.ShowDialog() == true && dialog.Parameters != null)
+        {
+            _viewModel.CreatePattern(dialog.Parameters);
+            _viewModel.Render((float)ViewerCanvas.ActualWidth, (float)ViewerCanvas.ActualHeight);
+        }
+    }
+
     private void MainCanvas_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
     {
         System.Windows.Point position = e.GetPosition(EditorCanvas);

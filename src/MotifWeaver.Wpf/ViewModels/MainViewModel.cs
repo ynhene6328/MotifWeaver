@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Numerics;
 using System.Linq;
 using MotifWeaver.Core.Geometry;
@@ -15,6 +18,8 @@ public sealed class MainViewModel
     private ViewerRenderer _viewerRenderer = null!;
     private readonly IRenderer _editorCanvasRenderer;
     private readonly IRenderer _viewerCanvasRenderer;
+    private float _lastViewerWidth;
+    private float _lastViewerHeight;
 
     public Pattern Pattern { get; private set; } = null!;
     public PaletteViewModel Palette { get; }
@@ -29,7 +34,56 @@ public sealed class MainViewModel
         
         Palette = new PaletteViewModel();
 
+        // Palette.Items の変更イベントをリッスン
+        Palette.Items.CollectionChanged += PaletteItems_CollectionChanged;
+
+        // 既存アイテムのPropertyChangedイベントをリッスン
+        foreach (var item in Palette.Items)
+        {
+            AttachItemPropertyChanged(item);
+        }
+
         CreatePattern(new PatternCreationParameters { GridType = GridType.Hex, Rows = 4, Cols = 4 });
+    }
+
+    private void PaletteItems_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    {
+        // 追加されたアイテムのPropertyChangedをリッスン
+        if (e.NewItems != null)
+        {
+            foreach (PaletteItemViewModel item in e.NewItems)
+            {
+                AttachItemPropertyChanged(item);
+            }
+        }
+
+        // 削除されたアイテムのPropertyChangedをリッスン解除
+        if (e.OldItems != null)
+        {
+            foreach (PaletteItemViewModel item in e.OldItems)
+            {
+                DetachItemPropertyChanged(item);
+            }
+        }
+    }
+
+    private void AttachItemPropertyChanged(PaletteItemViewModel item)
+    {
+        item.PropertyChanged += PaletteItem_PropertyChanged;
+    }
+
+    private void DetachItemPropertyChanged(PaletteItemViewModel item)
+    {
+        item.PropertyChanged -= PaletteItem_PropertyChanged;
+    }
+
+    private void PaletteItem_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        // Colorプロパティが変更されたときにRenderをトリガー
+        if (e.PropertyName == nameof(PaletteItemViewModel.Color))
+        {
+            Render(_lastViewerWidth, _lastViewerHeight);
+        }
     }
 
     public void CreatePattern(PatternCreationParameters p)
@@ -62,14 +116,17 @@ public sealed class MainViewModel
         Vector2 logicalPosition = _geometry.ToLogicalPosition(screenPosition);
         Face? face = _query.FindFace(Pattern.Faces, logicalPosition);
         
-        if (face != null)
+        if (face != null && Palette.SelectedItem != null)
         {
-            face.AttributeId = face.AttributeId == 0 ? 1 : 0;
+            face.AttributeId = Palette.SelectedItem.AttributeId;
         }
     }
 
     public void Render(float viewerWidth, float viewerHeight)
     {
+        _lastViewerWidth = viewerWidth;
+        _lastViewerHeight = viewerHeight;
+        
         _editorRenderer.Render(Pattern);
         _viewerRenderer.Render(Pattern, viewerWidth, viewerHeight);
     }

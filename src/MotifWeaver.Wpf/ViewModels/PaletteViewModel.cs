@@ -8,7 +8,15 @@ namespace MotifWeaver.Wpf.ViewModels;
 
 public sealed class PaletteViewModel : ViewModelBase
 {
+    private PaletteItemViewModel? _selectedItem;
+
     public ObservableCollection<PaletteItemViewModel> Items { get; }
+
+    public PaletteItemViewModel? SelectedItem
+    {
+        get => _selectedItem;
+        set => SetProperty(ref _selectedItem, value);
+    }
 
     public ICommand AddCommand { get; }
     public ICommand ChangeColorCommand { get; }
@@ -42,5 +50,11 @@ public sealed class PaletteViewModel : ViewModelBase
         // Default item configurations
         Items.Add(new PaletteItemViewModel(0, System.Windows.Media.Colors.White));
         Items.Add(new PaletteItemViewModel(1, System.Windows.Media.Colors.Red));
+        
+        // 初期選択
+        if (Items.Count > 0)
+        {
+            SelectedItem = Items[0];
+        }
     }
 }

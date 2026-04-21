@@ -1,17 +1,112 @@
 <Window x:Class="MotifWeaver.Wpf.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:MotifWeaver.Wpf"
         Title="MotifWeaver" Height="450" Width="800"
         Loaded="Window_Loaded">
+    <Window.Resources>
+        <local:ColorToSolidColorBrushConverter x:Key="ColorToSolidColorBrushConverter" />
+
+        <Style x:Key="FluentIconButtonStyle" TargetType="Button">
+            <!-- Fluent Icons -->
+            <Setter Property="FontFamily" Value="Segoe Fluent Icons"/>
+            <Setter Property="FontSize" Value="16"/>
+
+            <!-- 見た目 -->
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="6"/>
+
+            <!-- 既定の色変化を完全排除 -->
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Grid Background="{TemplateBinding Background}">
+                            <ContentPresenter
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"/>
+                        </Grid>
+
+                        <ControlTemplate.Triggers>
+                            <!-- 押した感だけ最低限 -->
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Opacity" Value="0.6"/>
+                            </Trigger>
+
+                            <!-- 無効状態 -->
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.3"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+
+        </Style>
+
+    </Window.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
-        <Border Grid.Column="0" BorderBrush="Gray" BorderThickness="1">
-            <Canvas x:Name="EditorCanvas" Background="Transparent" MouseLeftButtonDown="MainCanvas_MouseLeftButtonDown" />
-        </Border>
+        <DockPanel>
+            <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" Margin="5">
+                <GroupBox Header="Tools" Margin="0,0,5,0">
+                    <Button Content="Init" Click="InitButton_Click" Margin="0,0,5,0" />
+               </GroupBox>
+                <GroupBox Header="ColorPalette" Margin="0,0,5,0" DataContext="{Binding Palette}">
+                    <DockPanel Margin="5">
+                        <Button DockPanel.Dock="Left" Command="{Binding AddCommand}" Style="{StaticResource FluentIconButtonStyle}" Content="&#xECC8;" Margin="0,0,5,0"/>
+                        <ListBox ItemsSource="{Binding Items}" 
+                                 SelectedItem="{Binding SelectedItem}"
+                                 ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                                 ScrollViewer.VerticalScrollBarVisibility="Disabled">
+                            <ListBox.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel Orientation="Horizontal"/>
+                                </ItemsPanelTemplate>
+                            </ListBox.ItemsPanel>
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal" Margin="2">
+                                        <TextBlock Text="{Binding AttributeId}" VerticalAlignment="Center" Margin="0,0,10,0" />
+                                        <Button Command="{Binding RelativeSource={RelativeSource AncestorType=ListBox}, Path=DataContext.ChangeColorCommand}"
+                                                CommandParameter="{Binding}"
+                                                Background="{Binding Color, Converter={StaticResource ColorToSolidColorBrushConverter}}"
+                                                Width="20" Height="20">
+                                            <Button.Template>
+                                                <ControlTemplate TargetType="Button">
+                                                    <Border x:Name="border"
+                                                            Background="{TemplateBinding Background}"
+                                                            BorderBrush="Gray"
+                                                            BorderThickness="1">
+                                                        <ContentPresenter
+                                                            HorizontalAlignment="Center"
+                                                            VerticalAlignment="Center"/>
+                                                    </Border>
+                                                    <ControlTemplate.Triggers>
+                                                        <Trigger Property="IsPressed" Value="True">
+                                                            <Setter TargetName="border" Property="Opacity" Value="0.7"/>
+                                                        </Trigger>
+                                                    </ControlTemplate.Triggers>
+                                                </ControlTemplate>
+                                            </Button.Template>
+                                        </Button>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                    </DockPanel>
+                </GroupBox>
+            </StackPanel>
+            <Border Grid.Column="0" BorderBrush="Gray" BorderThickness="1">
+                <Canvas x:Name="EditorCanvas" Background="Transparent" MouseLeftButtonDown="MainCanvas_MouseLeftButtonDown" />
+            </Border>
+        </DockPanel>
 
         <Border Grid.Column="1" BorderBrush="Gray" BorderThickness="1">
             <Canvas x:Name="ViewerCanvas" Background="Transparent" SizeChanged="ViewerCanvas_SizeChanged" />
