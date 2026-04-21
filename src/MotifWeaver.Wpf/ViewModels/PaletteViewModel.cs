@@ -8,6 +8,19 @@ namespace MotifWeaver.Wpf.ViewModels;
 
 public sealed class PaletteViewModel : ViewModelBase
 {
+    static Array DefaultColors = new[]
+    {
+        System.Windows.Media.Colors.White,
+        System.Windows.Media.Colors.Red,
+        System.Windows.Media.Colors.Green,
+        System.Windows.Media.Colors.Blue,
+        System.Windows.Media.Colors.Yellow,
+        System.Windows.Media.Colors.SkyBlue,
+        System.Windows.Media.Colors.Orange,
+        System.Windows.Media.Colors.Purple,
+        System.Windows.Media.Colors.Brown,
+        System.Windows.Media.Colors.Pink,
+    };
     private PaletteItemViewModel? _selectedItem;
 
     public ObservableCollection<PaletteItemViewModel> Items { get; }
@@ -28,8 +41,15 @@ public sealed class PaletteViewModel : ViewModelBase
         AddCommand = new DelegateCommand(_ =>
         {
             int nextId = Items.Count > 0 ? Items.Max(x => x.AttributeId) + 1 : 1;
-            Random rand = new Random();
-            System.Windows.Media.Color newColor = System.Windows.Media.Color.FromRgb((byte)rand.Next(256), (byte)rand.Next(256), (byte)rand.Next(256));
+            var newColor = System.Windows.Media.Colors.White;
+            if(Items.Count < DefaultColors.Length)
+            {
+                newColor = (System.Windows.Media.Color)DefaultColors.GetValue(Items.Count)!;
+            }
+            else{
+                Random rand = new Random();
+                newColor = System.Windows.Media.Color.FromRgb((byte)rand.Next(256), (byte)rand.Next(256), (byte)rand.Next(256));
+            }
             Items.Add(new PaletteItemViewModel(nextId, newColor));
         });
 
