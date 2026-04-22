@@ -4,23 +4,10 @@ using System.Collections.Generic;
 
 namespace MotifWeaver.Core.Topology;
 
-public sealed class HexGridTopology : IGridTopology
+public sealed class HexGridTopology : GridTopology
 {
-    private readonly TopologyBuilder _topologyBuilder;
 
-    public HexGridTopology()
-        : this(new TopologyBuilder())
-    {
-    }
-
-    public HexGridTopology(TopologyBuilder topologyBuilder)
-    {
-        _topologyBuilder = topologyBuilder ?? throw new ArgumentNullException(nameof(topologyBuilder));
-    }
-
-    public TopologyBuilder Builder => _topologyBuilder;
-
-    public IReadOnlyList<Face> Build(int rows, int cols)
+    public override IReadOnlyList<Face> Build(int rows, int cols)
     {
         if (rows < 0)
         {
@@ -65,18 +52,26 @@ public sealed class HexGridTopology : IGridTopology
         ];
     }
 
-    public (int width, int height) CalculateSize(IReadOnlyList<Face> faces)
+    public override (int width, int height) CalculateSize(IReadOnlyList<Face> faces)
     {
         var targetVertices = new List<VertexKey>();
         foreach(var face in faces)
         {
             targetVertices.AddRange(face.Vertices.Where(v => v.Key.Y == 1).Select(v => v.Key));
         }
-        var maxX = targetVertices.Select(v => v.X).Max();
-        var minX = targetVertices.Select(v => v.X).Min();
+        var maxX = targetVertices.Max(v => v.X);
+        var minX = targetVertices.Min(v => v.X);
         
-        var maxY = faces.Select(f => f.Vertices.Select(v => v.Key.Y).Max()).Max();
+        var maxY = faces.Max(f => f.Vertices.Max(v => v.Key.Y));
 
         return (maxX - minX, maxY - 1);
+    }
+
+    public override IReadOnlyList<Face> Resize(int rows, int cols, int baseRow = 0, int baseCol = 0)
+    {
+        if (cols % 2 != 0)
+            throw new ArgumentException("列数は偶数である必要があります");
+
+        return ResizeCore(rows, cols, baseCol * 3, baseRow * 2);
     }
 }

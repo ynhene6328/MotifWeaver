@@ -39,9 +39,7 @@ public sealed class Face : IAttributable
             _vertices.Add(vertices[index]);
             _edges.Add(edges[index]);
         }
-        Key = new FaceKey(vertices);
     }
-    public FaceKey Key { get; }
     public IReadOnlyList<Vertex> Vertices => _vertices;
 
     public IReadOnlyList<Edge> Edges => _edges;

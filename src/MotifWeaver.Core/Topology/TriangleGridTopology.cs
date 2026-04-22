@@ -4,23 +4,9 @@ using System.Collections.Generic;
 
 namespace MotifWeaver.Core.Topology;
 
-public sealed class TriangleGridTopology : IGridTopology
+public sealed class TriangleGridTopology : GridTopology
 {
-    private readonly TopologyBuilder _topologyBuilder;
-
-    public TriangleGridTopology()
-        : this(new TopologyBuilder())
-    {
-    }
-
-    public TriangleGridTopology(TopologyBuilder topologyBuilder)
-    {
-        _topologyBuilder = topologyBuilder ?? throw new ArgumentNullException(nameof(topologyBuilder));
-    }
-
-    public TopologyBuilder Builder => _topologyBuilder;
-
-    public IReadOnlyList<Face> Build(int rows, int cols)
+    public override IReadOnlyList<Face> Build(int rows, int cols)
     {
         if (rows < 0)
             throw new ArgumentOutOfRangeException(nameof(rows));
@@ -60,18 +46,26 @@ public sealed class TriangleGridTopology : IGridTopology
         return faces;
     }
 
-    public (int width, int height) CalculateSize(IReadOnlyList<Face> faces)
+    public override (int width, int height) CalculateSize(IReadOnlyList<Face> faces)
     {
         var topVertices = new List<VertexKey>();
         foreach(var face in faces)
         {
             topVertices.AddRange(face.Vertices.Where(v => v.Key.Y == 0).Select(v => v.Key));
         }
-        var maxX = topVertices.Select(v => v.X).Max();
-        var minX = topVertices.Select(v => v.X).Min();
+        var maxX = topVertices.Max(v => v.X);
+        var minX = topVertices.Min(v => v.X);
         
-        var maxY = faces.Select(f => f.Vertices.Select(v => v.Key.Y).Max()).Max();
+        var maxY = faces.Max(f => f.Vertices.Max(v => v.Key.Y));
 
         return (maxX - minX, maxY);
+    }
+
+    public override IReadOnlyList<Face> Resize(int rows, int cols, int baseRow = 0, int baseCol = 0)
+    {
+        if (cols % 2 != 0)
+            throw new ArgumentException("列数は偶数である必要があります");
+
+        return ResizeCore(rows, cols, baseCol * 2, baseRow);
     }
 }

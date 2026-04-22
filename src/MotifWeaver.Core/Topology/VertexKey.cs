@@ -3,7 +3,7 @@ using System;
 
 namespace MotifWeaver.Core.Topology;
 
-public readonly struct VertexKey : IEquatable<VertexKey>
+public class VertexKey : IEquatable<VertexKey>
 {
     public VertexKey(int x, int y)
     {
@@ -11,13 +11,18 @@ public readonly struct VertexKey : IEquatable<VertexKey>
         Y = y;
     }
 
-    public int X { get; }
+    public int X { get; private set;}
 
-    public int Y { get; }
-
-    public bool Equals(VertexKey other)
+    public int Y { get; private set;}
+    public void Offset(int offsetX, int offsetY)
     {
-        return X == other.X && Y == other.Y;
+        X += offsetX;
+        Y += offsetY;
+    }
+
+    public bool Equals(VertexKey? other)
+    {
+        return other is not null && X == other.X && Y == other.Y;
     }
 
     public override bool Equals(object? obj)

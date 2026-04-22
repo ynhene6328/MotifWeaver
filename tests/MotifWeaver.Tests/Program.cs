@@ -559,6 +559,10 @@ internal sealed class MockGridTopology : IGridTopology
     {
         return (0, 0);
     }
+    public IReadOnlyList<Face> Resize(int rows, int cols, int baseRow = 0, int baseCol = 0)
+    {
+        return _faces;
+    }
 }
 
 /// <summary>

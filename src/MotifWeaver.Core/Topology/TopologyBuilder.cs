@@ -200,4 +200,46 @@ public sealed class TopologyBuilder
 
         return twiceArea;
     }
+
+    public void Offset(int offsetX, int offsetY)
+    {
+        foreach (var vertex in _vertexMap.Values)
+        {
+            vertex.Key.Offset(offsetX, offsetY);
+        }
+    }
+
+    public void CopyAttributesFrom(TopologyBuilder other, Func<Face, Face, bool>? faceComparator = null)
+    {
+        if (other is null)
+        {
+            throw new ArgumentNullException(nameof(other));
+        }
+
+        foreach (var vertexPair in other.Vertices)
+        {
+            if (_vertexMap.TryGetValue(vertexPair.Key, out Vertex? vertex))
+            {
+                vertex.AttributeId = vertexPair.Value.AttributeId;
+            }
+        }
+
+        foreach (var edgePair in other.Edges)
+        {
+            if (_edgeMap.TryGetValue(edgePair.Key, out Edge? edge))
+            {
+                edge.AttributeId = edgePair.Value.AttributeId;
+            }
+        }
+
+        if(faceComparator is null) return;
+
+        foreach (var facePair in other.Faces)
+        {
+            if (_faces.FirstOrDefault(f => faceComparator(f, facePair)) is Face face)
+            {
+                face.AttributeId = facePair.AttributeId;
+            }
+        }
+    }
 }

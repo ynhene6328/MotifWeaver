@@ -32,4 +32,5 @@ public sealed class Vertex
 
         _edges.Add(edge);
     }
+    public int AttributeId { get; set; }
 }
