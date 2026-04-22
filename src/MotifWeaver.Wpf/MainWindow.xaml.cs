@@ -25,6 +25,11 @@ public partial class MainWindow : Window
     {
         _viewModel.Render((float)ViewerCanvas.ActualWidth, (float)ViewerCanvas.ActualHeight);
     }
+    private void TestButton_Click(object sender, RoutedEventArgs e)
+    {
+        _viewModel.Test();
+        _viewModel.Render((float)ViewerCanvas.ActualWidth, (float)ViewerCanvas.ActualHeight);
+    }
 
     private void InitButton_Click(object sender, RoutedEventArgs e)
     {

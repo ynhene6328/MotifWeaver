@@ -142,4 +142,9 @@ public sealed class MainViewModel
         _editorRenderer.Render(Pattern);
         _viewerRenderer.Render(Pattern, viewerWidth, viewerHeight);
     }
+
+    public void Test()
+    {
+        Pattern.Resize(6, 6, 2, 2);
+    }
 }
