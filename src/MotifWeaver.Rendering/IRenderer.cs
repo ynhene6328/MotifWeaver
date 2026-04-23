@@ -24,4 +24,6 @@ public interface IRenderer
     /// 描画フレームを確定する
     /// </summary>
     void End();
+
+    void SetCanvasSize(int width, int height);
 }

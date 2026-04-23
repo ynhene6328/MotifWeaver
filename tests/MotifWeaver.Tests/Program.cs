@@ -547,6 +547,10 @@ internal sealed class MockGridTopology : IGridTopology
     public int UnitY => 1;
     public int Row => 1;
     public int Col => 1;
+    public int LogicalWidth => 1;
+    public int LogicalHeight => 1;
+    public int MaxWidth => 1;
+    public int MaxHeight => 1;
     private readonly IReadOnlyList<Face> _faces;
 
     public MockGridTopology(IReadOnlyList<Face> faces)
@@ -557,16 +561,6 @@ internal sealed class MockGridTopology : IGridTopology
     public IReadOnlyList<Face> Build(int rows, int cols)
     {
         return _faces;
-    }
-
-    public int CalculateLogicalWidth()
-    {
-        return 0;
-    }
-
-    public int CalculateLogicalHeight()
-    {
-        return 0;
     }
     public IReadOnlyList<Face> Resize(int rows, int cols, int baseRow = 0, int baseCol = 0)
     {
@@ -607,6 +601,10 @@ internal sealed class MockRenderer : IRenderer
     public void End()
     {
         EndCalled = true;
+    }
+    public void SetCanvasSize(int width, int height)
+    {
+        // テストではキャンバスサイズは無視する
     }
 }
 

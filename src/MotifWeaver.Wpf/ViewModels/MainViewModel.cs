@@ -139,8 +139,24 @@ public sealed class MainViewModel
         _lastViewerWidth = viewerWidth;
         _lastViewerHeight = viewerHeight;
         
+        _editorRenderer.SetCanvasSize(Pattern.Topology.MaxWidth, Pattern.Topology.MaxHeight);
         _editorRenderer.Render(Pattern);
         _viewerRenderer.Render(Pattern, viewerWidth, viewerHeight);
+    }
+
+    public void ResizePattern(bool isAdd, bool isTop, bool isHorizontal)
+    {
+        int offsetRow = 0;
+        int offsetCol = 0;
+        if (isTop)
+        {
+            offsetRow = isHorizontal ? 0 : (isAdd ? 1 : -1);
+            offsetCol = isHorizontal ? (isAdd ? 2 : -2) : 0;
+        }
+        int rows = Pattern.Topology.Row + (isHorizontal ? 0 : (isAdd ? 1 : -1));
+        int cols = Pattern.Topology.Col + (isHorizontal ? (isAdd ? 2 : -2) : 0);
+        Pattern.Resize(rows, cols, offsetRow, offsetCol);
+        Render(_lastViewerWidth, _lastViewerHeight);
     }
 
     public void Test()

@@ -43,4 +43,10 @@ public sealed class WpfRenderer : IRenderer
     public void End()
     {
     }
+
+    public void SetCanvasSize(int width, int height)
+    {
+        _canvas.Width = width;
+        _canvas.Height = height;
+    }
 }

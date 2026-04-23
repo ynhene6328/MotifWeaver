@@ -21,8 +21,8 @@ public sealed class ViewerRenderer
         if (pattern == null)
             throw new ArgumentNullException(nameof(pattern));
 
-        var logicalWidth = pattern.Topology.CalculateLogicalWidth();
-        var logicalHeight = pattern.Topology.CalculateLogicalHeight();
+        var logicalWidth = pattern.Topology.LogicalWidth;
+        var logicalHeight = pattern.Topology.LogicalHeight;
 
         var logicalSize = _renderService.Geometry.ToLogicalPosition(new Vector2(width, height));
         var repeatX = (int)(logicalSize.X / logicalWidth) + 1;

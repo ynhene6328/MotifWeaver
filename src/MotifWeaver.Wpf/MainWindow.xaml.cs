@@ -52,4 +52,36 @@ public partial class MainWindow : Window
     {
         _viewModel.Render((float)ViewerCanvas.ActualWidth, (float)ViewerCanvas.ActualHeight);
     }
+
+    private void LeftLeftButton_Click(object sender, RoutedEventArgs e)
+    {
+        _viewModel.ResizePattern(isAdd: true, isTop: true, isHorizontal: true);
+    }
+    private void LeftRightButton_Click(object sender, RoutedEventArgs e)
+    {
+        _viewModel.ResizePattern(isAdd: false, isTop: true, isHorizontal: true);
+    }
+    private void RightLeftButton_Click(object sender, RoutedEventArgs e)
+    {
+        _viewModel.ResizePattern(isAdd: false, isTop: false, isHorizontal: true);
+    }
+    private void RightRightButton_Click(object sender, RoutedEventArgs e)    {
+        _viewModel.ResizePattern(isAdd: true, isTop: false, isHorizontal: true);
+    }
+    private void UpUpButton_Click(object sender, RoutedEventArgs e)
+    {
+        _viewModel.ResizePattern(isAdd: true, isTop: true, isHorizontal: false);
+    }
+    private void UpDownButton_Click(object sender, RoutedEventArgs e)
+    {
+        _viewModel.ResizePattern(isAdd: false, isTop: true, isHorizontal: false);
+    }
+    private void DownUpButton_Click(object sender, RoutedEventArgs e)
+    {
+        _viewModel.ResizePattern(isAdd: false, isTop: false, isHorizontal: false);
+    }
+    private void DownDownButton_Click(object sender, RoutedEventArgs e)
+    {
+        _viewModel.ResizePattern(isAdd: true, isTop: false, isHorizontal: false);
+    }
 }

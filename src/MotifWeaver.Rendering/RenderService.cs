@@ -52,4 +52,10 @@ public sealed class RenderService
             _renderer.DrawPolygon(points, fillColor);
         }
     }
+
+    public void SetCanvasSize(int logicalWidth, int logicalHeight)
+    {
+        var temp = _geometry.GetPosition(new VertexKey(logicalWidth, logicalHeight));
+        _renderer.SetCanvasSize((int)temp.X, (int)temp.Y);
+    }
 }

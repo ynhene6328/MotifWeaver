@@ -107,7 +107,19 @@
                 </GroupBox>
             </StackPanel>
             <Border Grid.Column="0" BorderBrush="Gray" BorderThickness="1">
-                <Canvas x:Name="EditorCanvas" Background="Transparent" MouseLeftButtonDown="MainCanvas_MouseLeftButtonDown" />
+                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <Button Click="UpUpButton_Click" Style="{StaticResource FluentIconButtonStyle}" Content="&#xE70E;"/>
+                    <Button Click="UpDownButton_Click" Style="{StaticResource FluentIconButtonStyle}" Content="&#xE70D;"/>
+                    <StackPanel Orientation="Horizontal" Margin="5">
+                        <Button Click="LeftLeftButton_Click" Style="{StaticResource FluentIconButtonStyle}" Content="&#xE76B;"/>
+                        <Button Click="LeftRightButton_Click" Style="{StaticResource FluentIconButtonStyle}" Content="&#xE76C;"/>
+                        <Canvas x:Name="EditorCanvas" Background="Transparent" MouseLeftButtonDown="MainCanvas_MouseLeftButtonDown" />
+                        <Button Click="RightLeftButton_Click" Style="{StaticResource FluentIconButtonStyle}" Content="&#xE76B;"/>
+                        <Button Click="RightRightButton_Click" Style="{StaticResource FluentIconButtonStyle}" Content="&#xE76C;"/>
+                    </StackPanel>
+                    <Button Click="DownUpButton_Click" Style="{StaticResource FluentIconButtonStyle}" Content="&#xE70E;"/>
+                    <Button Click="DownDownButton_Click" Style="{StaticResource FluentIconButtonStyle}" Content="&#xE70D;"/>
+                </StackPanel>
             </Border>
         </DockPanel>
 

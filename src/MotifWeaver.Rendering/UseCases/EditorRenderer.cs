@@ -25,4 +25,9 @@ public sealed class EditorRenderer
         _renderService.Render(pattern, Vector2.Zero);
         _renderer.End();
     }
+
+    public void SetCanvasSize(int logicalWidth, int logicalHeight)
+    {
+        _renderService.SetCanvasSize(logicalWidth, logicalHeight);
+    }
 }

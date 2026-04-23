@@ -8,6 +8,8 @@ public sealed class HexGridTopology : GridTopology
 {
     public override int UnitX => 3;
     public override int UnitY => 2;
+    public override int LogicalWidth => MaxWidth - 1;
+    public override int LogicalHeight => MaxHeight - 1;
     public override IReadOnlyList<Face> Build(int rows, int cols)
     {
         if (rows < 0)
@@ -35,10 +37,10 @@ public sealed class HexGridTopology : GridTopology
         return faces;
     }
 
-    private static IReadOnlyList<VertexKey> CreateHexVertices(int q, int r)
+    private IReadOnlyList<VertexKey> CreateHexVertices(int q, int r)
     {
-        int cx = 3 * q;
-        int cy = r * 2;
+        int cx = UnitX * q;
+        int cy = r * UnitY;
 
         cy += (q % 2 == 0) ? 0 : 1;
 
@@ -52,29 +54,12 @@ public sealed class HexGridTopology : GridTopology
             new VertexKey(cx    , cy + 1)
         ];
     }
-    public override int CalculateLogicalWidth()
-    {
-        var targetVertices = new List<VertexKey>();
-        foreach(var face in _topologyBuilder.Faces)
-        {
-            targetVertices.AddRange(face.Vertices.Where(v => v.Key.Y == 1).Select(v => v.Key));
-        }
-        var maxX = targetVertices.Max(v => v.X);
-        var minX = targetVertices.Min(v => v.X);
-        
-        return maxX - minX;
-    }
 
-    public override int CalculateLogicalHeight()
-    {
-        var maxY = _topologyBuilder.Faces.Max(f => f.Vertices.Max(v => v.Key.Y));
-        return maxY - 1;
-    }
     public override IReadOnlyList<Face> Resize(int rows, int cols, int baseRow = 0, int baseCol = 0)
     {
         if (cols % 2 != 0)
             throw new ArgumentException("列数は偶数である必要があります");
 
-        return ResizeCore(rows, cols, baseCol * 3, baseRow * 2);
+        return ResizeCore(new HexGridTopology(), rows, cols, baseCol * UnitX, baseRow * UnitY);
     }
 }

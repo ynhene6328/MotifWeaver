@@ -8,8 +8,12 @@ public abstract class GridTopology : IGridTopology
 {
     public abstract int UnitX { get; }
     public abstract int UnitY { get; }
-    public int Row => CalculateLogicalWidth() / UnitX;
-    public int Col => CalculateLogicalHeight() / UnitY;
+    public int MaxWidth => _topologyBuilder.Faces.Max(f => f.Vertices.Max(v => v.Key.X)) - _topologyBuilder.Faces.Min(f => f.Vertices.Min(v => v.Key.X));
+    public int MaxHeight => _topologyBuilder.Faces.Max(f => f.Vertices.Max(v => v.Key.Y)) - _topologyBuilder.Faces.Min(f => f.Vertices.Min(v => v.Key.Y));
+    public abstract int LogicalWidth { get; }
+    public abstract int LogicalHeight { get; }
+    public int Row => LogicalHeight / UnitY;
+    public int Col => LogicalWidth / UnitX;
 
     protected TopologyBuilder _topologyBuilder;
     public GridTopology()
@@ -25,25 +29,22 @@ public abstract class GridTopology : IGridTopology
     public TopologyBuilder Builder => _topologyBuilder;
 
     public abstract IReadOnlyList<Face> Build(int rows, int cols);
-    public abstract int CalculateLogicalWidth();
-    public abstract int CalculateLogicalHeight();
     public abstract IReadOnlyList<Face> Resize(int rows, int cols, int baseRow = 0, int baseCol = 0);
 
-    protected IReadOnlyList<Face> ResizeCore(int rows, int cols, int offsetX, int offsetY)
+    protected IReadOnlyList<Face> ResizeCore(GridTopology newGridTopology, int rows, int cols, int offsetX, int offsetY)
     {
-        var newTopology = new HexGridTopology();
-        var newFaces = newTopology.Build(rows, cols);
+        var newFaces = newGridTopology.Build(rows, cols);
 
         _topologyBuilder.Offset(offsetX, offsetY);
 
-        newTopology.Builder.CopyAttributesFrom(_topologyBuilder, faceComparator: (f1, f2) =>
+        newGridTopology.Builder.CopyAttributesFrom(_topologyBuilder, faceComparator: (f1, f2) =>
         {
             var k1 = new GridFaceKey(f1);
             var k2 = new GridFaceKey(f2);
             return k1.Equals(k2);
         });
 
-        _topologyBuilder = newTopology.Builder;
+        _topologyBuilder = newGridTopology.Builder;
         return newFaces;
     }
     
