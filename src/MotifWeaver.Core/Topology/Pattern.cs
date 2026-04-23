@@ -9,9 +9,6 @@ public sealed class Pattern
 
     public IReadOnlyList<Face> Faces { get; private set; }
 
-    public int LogicalWidth => Topology.CalculateSize(Faces).width;
-    public int LogicalHeight => Topology.CalculateSize(Faces).height;
-
     public Pattern(IGridTopology topology, int rows, int cols)
     {
         if (topology is null)

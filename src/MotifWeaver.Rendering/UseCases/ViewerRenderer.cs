@@ -21,11 +21,12 @@ public sealed class ViewerRenderer
         if (pattern == null)
             throw new ArgumentNullException(nameof(pattern));
 
-        var (dx, dy) = pattern.Topology.CalculateSize(pattern.Faces);
-        
+        var logicalWidth = pattern.Topology.CalculateLogicalWidth();
+        var logicalHeight = pattern.Topology.CalculateLogicalHeight();
+
         var logicalSize = _renderService.Geometry.ToLogicalPosition(new Vector2(width, height));
-        var repeatX = (int)(logicalSize.X / dx) + 1;
-        var repeatY = (int)(logicalSize.Y / dy) + 1;
+        var repeatX = (int)(logicalSize.X / logicalWidth) + 1;
+        var repeatY = (int)(logicalSize.Y / logicalHeight) + 1;
 
         _renderer.Begin();
 
@@ -33,7 +34,7 @@ public sealed class ViewerRenderer
         {
             for (int x = 0; x < repeatX; x++)
             {
-                var offset = new Vector2(x * dx, y * dy);
+                var offset = new Vector2(x * logicalWidth, y * logicalHeight);
                 _renderService.Render(pattern, offset);
             }
         }

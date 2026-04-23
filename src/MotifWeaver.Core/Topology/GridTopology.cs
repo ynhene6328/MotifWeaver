@@ -6,6 +6,11 @@ namespace MotifWeaver.Core.Topology;
 
 public abstract class GridTopology : IGridTopology
 {
+    public abstract int UnitX { get; }
+    public abstract int UnitY { get; }
+    public int Row => CalculateLogicalWidth() / UnitX;
+    public int Col => CalculateLogicalHeight() / UnitY;
+
     protected TopologyBuilder _topologyBuilder;
     public GridTopology()
         : this(new TopologyBuilder())
@@ -20,9 +25,8 @@ public abstract class GridTopology : IGridTopology
     public TopologyBuilder Builder => _topologyBuilder;
 
     public abstract IReadOnlyList<Face> Build(int rows, int cols);
-
-    public abstract (int width, int height) CalculateSize(IReadOnlyList<Face> faces);
-
+    public abstract int CalculateLogicalWidth();
+    public abstract int CalculateLogicalHeight();
     public abstract IReadOnlyList<Face> Resize(int rows, int cols, int baseRow = 0, int baseCol = 0);
 
     protected IReadOnlyList<Face> ResizeCore(int rows, int cols, int offsetX, int offsetY)

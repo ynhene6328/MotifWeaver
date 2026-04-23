@@ -6,6 +6,8 @@ namespace MotifWeaver.Core.Topology;
 
 public sealed class TriangleGridTopology : GridTopology
 {
+    public override int UnitX => 2;
+    public override int UnitY => 1;
     public override IReadOnlyList<Face> Build(int rows, int cols)
     {
         if (rows < 0)
@@ -45,20 +47,23 @@ public sealed class TriangleGridTopology : GridTopology
 
         return faces;
     }
-
-    public override (int width, int height) CalculateSize(IReadOnlyList<Face> faces)
+    public override int CalculateLogicalWidth()
     {
         var topVertices = new List<VertexKey>();
-        foreach(var face in faces)
+        foreach(var face in _topologyBuilder.Faces)
         {
             topVertices.AddRange(face.Vertices.Where(v => v.Key.Y == 0).Select(v => v.Key));
         }
         var maxX = topVertices.Max(v => v.X);
         var minX = topVertices.Min(v => v.X);
         
-        var maxY = faces.Max(f => f.Vertices.Max(v => v.Key.Y));
+        return maxX - minX;
+    }
 
-        return (maxX - minX, maxY);
+    public override int CalculateLogicalHeight()
+    {
+        var maxY = _topologyBuilder.Faces.Max(f => f.Vertices.Max(v => v.Key.Y));
+        return maxY;
     }
 
     public override IReadOnlyList<Face> Resize(int rows, int cols, int baseRow = 0, int baseCol = 0)

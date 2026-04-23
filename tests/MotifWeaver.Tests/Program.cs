@@ -543,6 +543,10 @@ public static class Program
 /// </summary>
 internal sealed class MockGridTopology : IGridTopology
 {
+    public int UnitX => 1;
+    public int UnitY => 1;
+    public int Row => 1;
+    public int Col => 1;
     private readonly IReadOnlyList<Face> _faces;
 
     public MockGridTopology(IReadOnlyList<Face> faces)
@@ -555,9 +559,14 @@ internal sealed class MockGridTopology : IGridTopology
         return _faces;
     }
 
-    public (int width, int height) CalculateSize(IReadOnlyList<Face> faces)
+    public int CalculateLogicalWidth()
     {
-        return (0, 0);
+        return 0;
+    }
+
+    public int CalculateLogicalHeight()
+    {
+        return 0;
     }
     public IReadOnlyList<Face> Resize(int rows, int cols, int baseRow = 0, int baseCol = 0)
     {
