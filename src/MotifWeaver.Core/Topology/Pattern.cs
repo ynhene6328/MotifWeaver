@@ -14,18 +14,24 @@ public sealed class Pattern
         if (topology is null)
             throw new ArgumentNullException(nameof(topology));
         
-        if (cols % 2 != 0)
-            throw new ArgumentException("列数は偶数である必要があります");
-
         Topology = topology;
+
+        if (rows <= 0)
+            throw new ArgumentOutOfRangeException(nameof(rows));
+
+        if (cols <= 0)
+            throw new ArgumentOutOfRangeException(nameof(cols));
 
         Faces = topology.Build(rows, cols);
     }
 
     public void Resize(int rows, int cols, int baseRow = 0, int baseCol = 0)
     {
-        if (cols % 2 != 0)
-            throw new ArgumentException("列数は偶数である必要があります");
+        if (rows <= 0)
+            throw new ArgumentOutOfRangeException(nameof(rows));
+
+        if (cols <= 0)
+            throw new ArgumentOutOfRangeException(nameof(cols));
 
         Faces = Topology.Resize(rows, cols, baseRow, baseCol);
     }

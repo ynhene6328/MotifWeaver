@@ -148,13 +148,19 @@ public sealed class MainViewModel
     {
         int offsetRow = 0;
         int offsetCol = 0;
+        int unitRow = Pattern.Topology.UnitRow;
+        int unitCol = Pattern.Topology.UnitCol;
         if (isTop)
         {
-            offsetRow = isHorizontal ? 0 : (isAdd ? 1 : -1);
-            offsetCol = isHorizontal ? (isAdd ? 2 : -2) : 0;
+            offsetRow = isHorizontal ? 0 : (isAdd ? unitRow : -unitRow);
+            offsetCol = isHorizontal ? (isAdd ? unitCol : -unitCol) : 0;
         }
-        int rows = Pattern.Topology.Row + (isHorizontal ? 0 : (isAdd ? 1 : -1));
-        int cols = Pattern.Topology.Col + (isHorizontal ? (isAdd ? 2 : -2) : 0);
+        int rows = Pattern.Topology.Row + (isHorizontal ? 0 : (isAdd ? unitRow : -unitRow));
+        int cols = Pattern.Topology.Col + (isHorizontal ? (isAdd ? unitCol : -unitCol) : 0);
+
+        if (rows <= 0 || cols <= 0)
+            return;
+            
         Pattern.Resize(rows, cols, offsetRow, offsetCol);
         Render(_lastViewerWidth, _lastViewerHeight);
     }

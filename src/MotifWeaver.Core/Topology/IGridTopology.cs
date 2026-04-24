@@ -6,6 +6,8 @@ public interface IGridTopology
 {
     int UnitX { get; }
     int UnitY { get; }
+    int UnitRow { get; }
+    int UnitCol { get; }
     int Row { get; }
     int Col { get; }
     int LogicalWidth { get; }
@@ -14,4 +16,5 @@ public interface IGridTopology
     int MaxHeight { get; }
     IReadOnlyList<Face> Build(int rows, int cols);
     IReadOnlyList<Face> Resize(int rows, int cols, int baseRow = 0, int baseCol = 0);
+    (int row, int col) GetGridFaceRowCol(Face face);
 }

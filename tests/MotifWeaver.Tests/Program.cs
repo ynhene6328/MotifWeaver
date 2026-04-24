@@ -545,6 +545,8 @@ internal sealed class MockGridTopology : IGridTopology
 {
     public int UnitX => 1;
     public int UnitY => 1;
+    public int UnitRow => 1;
+    public int UnitCol => 1;
     public int Row => 1;
     public int Col => 1;
     public int LogicalWidth => 1;
@@ -565,6 +567,10 @@ internal sealed class MockGridTopology : IGridTopology
     public IReadOnlyList<Face> Resize(int rows, int cols, int baseRow = 0, int baseCol = 0)
     {
         return _faces;
+    }
+    public (int row, int col) GetGridFaceRowCol(Face face)
+    {
+        return (0, 0);
     }
 }
 
