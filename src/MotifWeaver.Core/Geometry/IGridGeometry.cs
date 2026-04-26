@@ -24,4 +24,9 @@ public interface IGridGeometry
     /// 描画座標を論理座標に変換する
     /// </summary>
     Vector2 ToLogicalPosition(Vector2 screenPosition);
+
+    /// <summary>
+    /// 指定されたFaceのEdgeの中で、指定された点に最も近いEdgeを返す
+    /// </summary>
+    Edge? FindClosestEdge(Face face, Vector2 point, float threshold);
 }

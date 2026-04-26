@@ -124,13 +124,19 @@ public sealed class MainViewModel
     }
 
     public void OnClick(Vector2 screenPosition)
-    {
+    {        
         Vector2 logicalPosition = _geometry.ToLogicalPosition(screenPosition);
         Face? face = _query.FindFace(Pattern.Faces, logicalPosition);
-        
-        if (face != null && Palette.SelectedItem != null)
+        if (face == null)
         {
-            face.AttributeId = Palette.SelectedItem.AttributeId;
+            return;
+        }
+        Edge? edge = _geometry.FindClosestEdge(face, screenPosition, threshold: 10.0f);
+        var closestElement = edge ?? (IAttributable)face;
+        
+        if (closestElement != null && Palette.SelectedItem != null)
+        {
+            closestElement.AttributeId = Palette.SelectedItem.AttributeId;
         }
     }
 

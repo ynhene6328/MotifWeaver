@@ -28,8 +28,8 @@ public sealed class WpfRenderer : IRenderer
         Polygon polygon = new Polygon
         {
             Fill = new SolidColorBrush(System.Windows.Media.Color.FromRgb(fillColor.R, fillColor.G, fillColor.B)),
-            Stroke = System.Windows.Media.Brushes.Black,
-            StrokeThickness = 1
+            Stroke = System.Windows.Media.Brushes.Gray,
+            StrokeThickness = 0.1
         };
 
         for (int i = 0; i < points.Count; i++)

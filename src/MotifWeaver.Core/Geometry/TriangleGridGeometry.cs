@@ -21,4 +21,5 @@ public sealed class TriangleGridGeometry : IGridGeometry
     public Vector2 GetPosition(VertexKey key) => _inner.GetPosition(key);
     public BoundingBox ComputeBounds(IEnumerable<VertexKey> keys) => _inner.ComputeBounds(keys);
     public Vector2 ToLogicalPosition(Vector2 screenPosition) => _inner.ToLogicalPosition(screenPosition);
+    public Edge? FindClosestEdge(Face face, Vector2 point, float threshold) => _inner.FindClosestEdge(face, point, threshold);
 }

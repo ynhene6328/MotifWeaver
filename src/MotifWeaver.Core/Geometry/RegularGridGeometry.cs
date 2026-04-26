@@ -79,4 +79,52 @@ public sealed class RegularGridGeometry : IGridGeometry
         float logicalY = screenPosition.Y / ((MathF.Sqrt(3.0f) / 2.0f) * _unitSize);
         return new Vector2(logicalX, logicalY);
     }
+
+    // 点との距離が閾値内のEdgeを返す。複数ある場合は最も距離が近いものを返す。ない場合はnullを返す。
+    public Edge? FindClosestEdge(Face face, Vector2 point, float threshold)
+    {
+        Edge? closestEdge = null;
+        float minDistance = float.MaxValue;
+
+        foreach (var edge in face.Edges)
+        {
+            var v1 = edge.V1.Key;
+            var v2 = edge.V2.Key;
+
+            Vector2 p1 = GetPosition(v1);
+            Vector2 p2 = GetPosition(v2);
+
+            float distanceToLine = DistancePointToLine(point, p1, p2);
+            float distanceToV1 = Vector2.Distance(point, p1);
+            float distanceToV2 = Vector2.Distance(point, p2);
+
+            float distance = Math.Min(distanceToLine, Math.Min(distanceToV1, distanceToV2));
+
+            if (distance < threshold && distance < minDistance)
+            {
+                minDistance = distance;
+                closestEdge = edge;
+            }
+        }
+
+        return closestEdge;
+    }
+
+    // 点と直線（2点）との距離
+    static float DistancePointToLine(Vector2 point, Vector2 lineStart, Vector2 lineEnd)
+    {
+        Vector2 lineDirection = lineEnd - lineStart;
+        float lineLengthSquared = lineDirection.LengthSquared();
+
+        if (lineLengthSquared == 0.0f)
+        {
+            return Vector2.Distance(point, lineStart);
+        }
+
+        float t = Vector2.Dot(point - lineStart, lineDirection) / lineLengthSquared;
+        t = Math.Clamp(t, 0.0f, 1.0f);
+
+        Vector2 projection = lineStart + t * lineDirection;
+        return Vector2.Distance(point, projection);
+    }
 }
