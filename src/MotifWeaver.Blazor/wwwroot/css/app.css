@@ -1,0 +1,269 @@
+/* MotifWeaver Blazor - メインスタイル */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html, body {
+    font-family: 'Inter', sans-serif;
+    background-color: #1a1a2e;
+    color: #e0e0e0;
+    height: 100%;
+}
+
+/* ---- レイアウト ---- */
+.app-layout {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.app-header {
+    background: linear-gradient(135deg, #16213e, #0f3460);
+    padding: 12px 24px;
+    border-bottom: 1px solid #2a2a4a;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.app-header h1 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #e94560;
+    letter-spacing: 0.05em;
+}
+
+.app-main {
+    flex: 1;
+    padding: 16px;
+}
+
+/* ---- ホームページ ---- */
+.home-container {
+    display: flex;
+    gap: 16px;
+    height: 100%;
+}
+
+/* ---- サイドバー ---- */
+.sidebar {
+    width: 220px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.control-section {
+    background: #16213e;
+    border: 1px solid #2a2a4a;
+    border-radius: 8px;
+    padding: 16px;
+}
+
+.control-section h3 {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #e94560;
+    margin-bottom: 12px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 10px;
+}
+
+.form-group label {
+    font-size: 0.8rem;
+    color: #aaa;
+}
+
+.form-group input {
+    background: #0f3460;
+    border: 1px solid #2a2a4a;
+    border-radius: 4px;
+    color: #e0e0e0;
+    padding: 6px 8px;
+    font-size: 0.9rem;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.form-group input:focus {
+    border-color: #e94560;
+}
+
+.btn-primary {
+    width: 100%;
+    padding: 8px;
+    background: linear-gradient(135deg, #e94560, #c23152);
+    border: none;
+    border-radius: 6px;
+    color: #fff;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.1s, box-shadow 0.2s;
+}
+
+.btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(233, 69, 96, 0.4);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+}
+
+/* ---- パレットパネル ---- */
+.palette-panel {
+    background: #16213e;
+    border: 1px solid #2a2a4a;
+    border-radius: 8px;
+    padding: 16px;
+}
+
+.palette-panel h3 {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #e94560;
+    margin-bottom: 12px;
+}
+
+.palette-items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.palette-item {
+    width: 36px;
+    height: 36px;
+    border: 2px solid #2a2a4a;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #333;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.15s, border-color 0.15s, box-shadow 0.15s;
+}
+
+.palette-item:hover {
+    transform: scale(1.1);
+    border-color: #e0e0e0;
+}
+
+.palette-item.selected {
+    border-color: #e94560;
+    box-shadow: 0 0 0 2px #e94560, 0 0 10px rgba(233, 69, 96, 0.5);
+    transform: scale(1.15);
+}
+
+/* ---- キャンバスエリア ---- */
+.canvas-area {
+    flex: 1;
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.canvas-panel {
+    background: #16213e;
+    border: 1px solid #2a2a4a;
+    border-radius: 8px;
+    padding: 12px;
+    overflow: hidden;
+}
+
+.canvas-panel h3 {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #aaa;
+    margin-bottom: 8px;
+}
+
+.canvas-panel svg {
+    background: #0a0a1a;
+    border-radius: 4px;
+}
+
+/* ---- SVGポリゴンのホバー効果 ---- */
+.pattern-viewer polygon {
+    transition: opacity 0.15s;
+}
+
+.pattern-viewer polygon:hover {
+    opacity: 0.8;
+    filter: brightness(1.2);
+}
+
+/* ---- ローディング ---- */
+.loading-progress {
+    position: relative;
+    display: block;
+    width: 8rem;
+    height: 8rem;
+    margin: 20vh auto 1rem;
+}
+
+.loading-progress circle {
+    fill: none;
+    stroke: #e94560;
+    stroke-width: 0.6rem;
+    transform-origin: 50% 50%;
+    transform: rotate(-90deg);
+}
+
+.loading-progress circle:last-child {
+    stroke: #333;
+    stroke-dasharray: calc(3.14159 * 80%);
+    stroke-dashoffset: calc(3.14159 * 80%);
+    animation: loading-spin 1.5s ease-in-out infinite;
+}
+
+@keyframes loading-spin {
+    50% {
+        stroke-dashoffset: 0;
+    }
+    100% {
+        stroke-dashoffset: calc(-3.14159 * 80%);
+    }
+}
+
+.loading-progress-text {
+    text-align: center;
+    font-weight: bold;
+    color: #e94560;
+}
+
+.loading-progress-text:after {
+    content: var(--blazor-load-percentage-text, "Loading");
+}
+
+/* ---- エラーUI ---- */
+#blazor-error-ui {
+    background: #c23152;
+    bottom: 0;
+    box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.2);
+    display: none;
+    left: 0;
+    padding: 0.6rem 1.25rem 0.7rem 1.25rem;
+    position: fixed;
+    width: 100%;
+    z-index: 1000;
+    color: #fff;
+}
+
+#blazor-error-ui .dismiss {
+    cursor: pointer;
+    position: absolute;
+    right: 0.75rem;
+    top: 0.5rem;
+}

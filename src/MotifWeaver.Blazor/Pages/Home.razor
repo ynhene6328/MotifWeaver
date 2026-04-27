@@ -1,0 +1,103 @@
+@* Home.razor - メインページ *@
+@page "/"
+@using System.Numerics
+@using MotifWeaver.Core.Geometry
+@using MotifWeaver.Core.Topology
+
+<PageTitle>MotifWeaver - Blazor Viewer</PageTitle>
+
+<div class="home-container">
+    <aside class="sidebar">
+        <section class="control-section">
+            <h3>パターン設定</h3>
+            <div class="form-group">
+                <label>Rows:</label>
+                <input type="number" min="1" max="20" @bind="_rows" />
+            </div>
+            <div class="form-group">
+                <label>Cols (偶数):</label>
+                <input type="number" min="2" max="20" step="2" @bind="_cols" />
+            </div>
+            <button class="btn-primary" @onclick="CreatePattern">パターン生成</button>
+        </section>
+
+        <PalettePanel Colors="_colorTable"
+                      @bind-SelectedId="_selectedAttributeId" />
+    </aside>
+
+    <div class="canvas-area">
+        <div class="canvas-panel">
+            <h3>Editor</h3>
+            <PatternViewer Pattern="_pattern"
+                           Geometry="_geometry"
+                           EnableRepeat="false"
+                           SelectedAttributeId="_selectedAttributeId"
+                           ColorResolver="ResolveColor"
+                           SvgWidth="400"
+                           SvgHeight="400"
+                           OnPatternChanged="StateHasChanged" />
+        </div>
+        <div class="canvas-panel">
+            <h3>Viewer（繰り返し）</h3>
+            <PatternViewer Pattern="_pattern"
+                           Geometry="_geometry"
+                           EnableRepeat="true"
+                           SelectedAttributeId="_selectedAttributeId"
+                           ColorResolver="ResolveColor"
+                           SvgWidth="600"
+                           SvgHeight="400"
+                           OnPatternChanged="StateHasChanged" />
+        </div>
+    </div>
+</div>
+
+@code {
+    // パターン生成パラメータ
+    private int _rows = 4;
+    private int _cols = 4;
+
+    // 状態
+    private Pattern? _pattern;
+    private IGridGeometry? _geometry;
+    private int _selectedAttributeId = 1;
+
+    // 色テーブル（インデックス = AttributeId）
+    private List<string> _colorTable = new()
+    {
+        "#ffffff",  // 0: 白（デフォルト）
+        "#e74c3c",  // 1: 赤
+        "#3498db",  // 2: 青
+        "#2ecc71",  // 3: 緑
+        "#f39c12",  // 4: オレンジ
+        "#9b59b6",  // 5: 紫
+    };
+
+    protected override void OnInitialized()
+    {
+        CreatePattern();
+    }
+
+    /// <summary>
+    /// パターンを生成する
+    /// </summary>
+    private void CreatePattern()
+    {
+        // 列数を偶数に強制
+        if (_cols % 2 != 0)
+            _cols++;
+
+        HexGridTopology topology = new HexGridTopology();
+        _pattern = new Pattern(topology, _rows, _cols);
+        _geometry = new HexGridGeometry(30.0f);
+    }
+
+    /// <summary>
+    /// AttributeId → CSS色文字列を返す
+    /// </summary>
+    private string ResolveColor(int attributeId)
+    {
+        if (attributeId >= 0 && attributeId < _colorTable.Count)
+            return _colorTable[attributeId];
+        return "#cccccc";
+    }
+}

@@ -1,0 +1,163 @@
+@* PatternViewer.razor - SVGによるPattern描画コンポーネント *@
+@using System.Numerics
+@using MotifWeaver.Core.Geometry
+@using MotifWeaver.Core.Topology
+
+<div class="pattern-viewer">
+    <svg width="@SvgWidth" height="@SvgHeight" xmlns="http://www.w3.org/2000/svg">
+        @foreach (var item in _renderItems)
+        {
+            <polygon points="@item.Points"
+                     fill="@item.FillColor"
+                     stroke="#333"
+                     stroke-width="1"
+                     @onclick="() => OnFaceClick(item.Face)"
+                     style="cursor: pointer;" />
+        }
+    </svg>
+</div>
+
+@code {
+    // パターン
+    [Parameter]
+    public Pattern? Pattern { get; set; }
+
+    // Geometry
+    [Parameter]
+    public IGridGeometry? Geometry { get; set; }
+
+    // 繰り返し描画の有効化
+    [Parameter]
+    public bool EnableRepeat { get; set; }
+
+    // 選択中のAttributeId
+    [Parameter]
+    public int SelectedAttributeId { get; set; }
+
+    // AttributeId → CSS色文字列の変換関数
+    [Parameter]
+    public Func<int, string>? ColorResolver { get; set; }
+
+    // SVGのサイズ
+    [Parameter]
+    public int SvgWidth { get; set; } = 800;
+
+    [Parameter]
+    public int SvgHeight { get; set; } = 600;
+
+    // 描画アイテムの事前計算リスト
+    private List<RenderItem> _renderItems = new();
+
+    // Face変更後の再描画通知
+    [Parameter]
+    public EventCallback OnPatternChanged { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        BuildRenderItems();
+    }
+
+    /// <summary>
+    /// Faceクリック時にAttributeIdを切り替える
+    /// </summary>
+    private async Task OnFaceClick(Face face)
+    {
+        face.AttributeId = face.AttributeId == SelectedAttributeId ? 0 : SelectedAttributeId;
+        BuildRenderItems();
+        await OnPatternChanged.InvokeAsync();
+    }
+
+    /// <summary>
+    /// 描画アイテムを事前計算する
+    /// </summary>
+    private void BuildRenderItems()
+    {
+        _renderItems.Clear();
+
+        if (Pattern == null || Geometry == null)
+            return;
+
+        Func<int, string> resolver = ColorResolver ?? DefaultColorResolver;
+
+        if (EnableRepeat)
+        {
+            // 繰り返し描画
+            int dx = Pattern.Topology.LogicalWidth;
+            int dy = Pattern.Topology.LogicalHeight;
+
+            if (dx == 0) dx = 6;
+            if (dy == 0) dy = 6;
+
+            // SVGサイズから繰り返し回数を計算
+            Vector2 logicalSize = Geometry.ToLogicalPosition(new Vector2(SvgWidth, SvgHeight));
+            int repeatX = (int)(logicalSize.X / dx) + 2;
+            int repeatY = (int)(logicalSize.Y / dy) + 2;
+
+            for (int ry = 0; ry < repeatY; ry++)
+            {
+                for (int rx = 0; rx < repeatX; rx++)
+                {
+                    Vector2 offset = new Vector2(rx * dx, ry * dy);
+                    AddFacesToRenderItems(Pattern, offset, resolver);
+                }
+            }
+        }
+        else
+        {
+            // 単発描画
+            AddFacesToRenderItems(Pattern, Vector2.Zero, resolver);
+        }
+    }
+
+    /// <summary>
+    /// Face群を描画アイテムに変換する
+    /// </summary>
+    private void AddFacesToRenderItems(Pattern pattern, Vector2 logicalOffset, Func<int, string> resolver)
+    {
+        foreach (Face face in pattern.Faces)
+        {
+            var sb = new System.Text.StringBuilder();
+
+            for (int i = 0; i < face.Vertices.Count; i++)
+            {
+                VertexKey key = face.Vertices[i].Key;
+                VertexKey shifted = new VertexKey(
+                    key.X + (int)logicalOffset.X,
+                    key.Y + (int)logicalOffset.Y);
+
+                Vector2 pos = Geometry!.GetPosition(shifted);
+
+                if (i > 0) sb.Append(' ');
+                // SVGのpoints形式: "x1,y1 x2,y2 ..."
+                sb.Append(pos.X.ToString("F1"));
+                sb.Append(',');
+                sb.Append(pos.Y.ToString("F1"));
+            }
+
+            string color = resolver(face.AttributeId);
+            _renderItems.Add(new RenderItem(sb.ToString(), color, face));
+        }
+    }
+
+    /// <summary>
+    /// デフォルトの色解決関数
+    /// </summary>
+    private static string DefaultColorResolver(int attributeId)
+    {
+        return attributeId switch
+        {
+            0 => "#ffffff",
+            1 => "#e74c3c",
+            2 => "#3498db",
+            3 => "#2ecc71",
+            4 => "#f39c12",
+            5 => "#9b59b6",
+            _ => "#cccccc"
+        };
+    }
+
+    /// <summary>
+    /// 描画用の内部データ
+    /// </summary>
+    private sealed record RenderItem(string Points, string FillColor, Face Face);
+}

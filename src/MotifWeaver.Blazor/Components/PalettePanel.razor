@@ -1,0 +1,37 @@
+@* PalettePanel.razor - AttributeId選択パネル *@
+
+<div class="palette-panel">
+    <h3>パレット</h3>
+    <div class="palette-items">
+        @for (int i = 0; i < Colors.Count; i++)
+        {
+            int id = i;
+            <button class="palette-item @(SelectedId == id ? "selected" : "")"
+                    style="background-color: @Colors[id];"
+                    @onclick="() => OnSelect(id)"
+                    title="AttributeId: @id">
+                @id
+            </button>
+        }
+    </div>
+</div>
+
+@code {
+    // 色リスト（インデックス = AttributeId）
+    [Parameter]
+    public IReadOnlyList<string> Colors { get; set; } = Array.Empty<string>();
+
+    // 選択中のAttributeId
+    [Parameter]
+    public int SelectedId { get; set; }
+
+    // 選択変更通知
+    [Parameter]
+    public EventCallback<int> SelectedIdChanged { get; set; }
+
+    private async Task OnSelect(int id)
+    {
+        SelectedId = id;
+        await SelectedIdChanged.InvokeAsync(id);
+    }
+}
