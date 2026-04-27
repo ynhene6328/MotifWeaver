@@ -29,6 +29,58 @@
                 "reveal": "always",
                 "panel": "new"
             }
+        },
+        {
+            "label": "blazor:build",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "${workspaceFolder}/src/MotifWeaver.Blazor/MotifWeaver.Blazor.csproj",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "blazor:run",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "run",
+                "--project",
+                "${workspaceFolder}/src/MotifWeaver.Blazor/MotifWeaver.Blazor.csproj",
+                "--configuration",
+                "Debug"
+            ],
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            }
+        },
+        {
+            "label": "blazor:watch",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "watch",
+                "--project",
+                "${workspaceFolder}/src/MotifWeaver.Blazor/MotifWeaver.Blazor.csproj",
+                "run"
+            ],
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            },
+            "isBackground": true,
+            "problemMatcher": {
+                "pattern": "$msCompile",
+                "background": {
+                    "activeOnStart": true,
+                    "beginsPattern": "^.*",
+                    "endsPattern": "^.*Now listening on:.*"
+                }
+            }
         }
     ]
 }
