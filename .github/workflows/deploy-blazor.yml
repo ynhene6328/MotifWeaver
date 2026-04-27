@@ -1,0 +1,61 @@
+# GitHub Actions: Blazor WASM を GitHub Pages にデプロイ
+name: Deploy Blazor to GitHub Pages
+
+on:
+  push:
+    branches: [ main ]
+
+# GitHub Pages デプロイ用の権限設定
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# 同時実行の制御
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      # チェックアウト
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # .NET SDK セットアップ
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      # Blazor WASM のパブリッシュ
+      - name: Publish Blazor WASM
+        run: dotnet publish src/MotifWeaver.Blazor/MotifWeaver.Blazor.csproj -c Release -o release
+
+      # Jekyll 無効化ファイルをコピー
+      - name: Add .nojekyll
+        run: touch release/wwwroot/.nojekyll
+
+      # SPA ルーティング用 404.html を作成（index.html のコピー）
+      - name: Create 404.html for SPA routing
+        run: cp release/wwwroot/index.html release/wwwroot/404.html
+
+      # GitHub Pages のセットアップ
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      # アーティファクトのアップロード
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: release/wwwroot
+
+      # GitHub Pages へデプロイ
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
