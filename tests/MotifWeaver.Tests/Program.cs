@@ -1,6 +1,7 @@
 // /tests/MotifWeaver.Tests/Program.cs
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Numerics;
 using MotifWeaver.Core.Geometry;
@@ -407,9 +408,13 @@ public static class Program
         MockRenderer renderer = new MockRenderer();
         MotifWeaver.Rendering.UseCases.EditorRenderer service = new MotifWeaver.Rendering.UseCases.EditorRenderer(renderer, geometry, new Func<int, MotifWeaver.Rendering.Color>(id => new MotifWeaver.Rendering.Color(200, 0, 0)));
 
-        service.Render(new Pattern(new MockGridTopology([face]), 4, 4));
+        int count = renderer.DrawnPolygons.Count;
+        service.Render(new Pattern(new MockGridTopology([face]), 1, 1));
 
-        AssertEqual(1, renderer.DrawnPolygons.Count, "Face1つに対しDrawPolygonが1回呼ばれなければならない。");
+        count = renderer.DrawnPolygons.Count - count;
+
+        // Face 1つ（1回）+ Edge 3つ（3回）= 4回
+        AssertEqual(4, count, "Face1つに対しDrawPolygonがFace+Edge数(1+3回)呼ばれなければならない。");
     }
 
     private static void RenderServicePassesCorrectVertexCount()
@@ -518,8 +523,13 @@ public static class Program
 
         service.Render(pattern);
 
-        AssertEqual(pattern.Faces.Count, renderer.DrawnPolygons.Count,
-            "Face数と同じ回数だけDrawPolygonが呼ばれなければならない。");
+        // RenderServiceではFaceとEdgeの両方を描画するため、期待値はFace数+Edge数
+        int expectedDrawCalls = pattern.Faces.Count;
+        int edgeCount = pattern.Faces.SelectMany(f => f.Edges).Distinct().Count();
+        expectedDrawCalls += edgeCount;
+
+        AssertEqual(expectedDrawCalls, renderer.DrawnPolygons.Count,
+            "Face数とEdge数の合計だけDrawPolygonが呼ばれなければならない。");
     }
 
     private static void RenderServiceHandlesEmptyCollection()
